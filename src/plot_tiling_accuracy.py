@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load Cell Data
-cellsDF = pd.read_csv('./data/year_2018__cell_500k/squares_and_triangles/cells.csv')
+cellsDF = pd.read_csv('./data/2018/squares_and_triangles/cells.csv')
 num_LL_triangles = cellsDF.groupby(['CountryCode'])['LowerLeft'].agg('sum')
 num_UR_triangles = cellsDF.groupby(['CountryCode'])['UpperRight'].agg('sum')
 num_squares = cellsDF.groupby(['CountryCode'])['IncludeInSquares'].agg('sum')
