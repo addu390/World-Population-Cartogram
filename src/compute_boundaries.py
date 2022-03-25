@@ -5,64 +5,58 @@ from shapely.ops import unary_union
 import pandas as pd
 from geojson import Feature, Point, Polygon, MultiPolygon, FeatureCollection, dump
 
-
 # list all tilings in the repos
 tilingDirectories = os.listdir('data')
 
 print('Creating All Square-Cell-Tilings from Square+Triangle-Cells-Tilings:')
 for tilingDir in tilingDirectories:
-
     print(tilingDir)
-    tilingPath = 'data/'+tilingDir+'/squares_and_triangles/cells.csv'
+    tilingPath = 'data/' + tilingDir + '/squares_and_triangles/cells.csv'
 
     # read initial cells.csv
     cellsDF = pd.read_csv(tilingPath)
 
     # write the squares one
-    tilingPath = 'data/'+tilingDir+'/squares/cells.csv'
-    cellsDF[['X','Y','CountryCode']].to_csv(tilingPath,index=False)
+    tilingPath = 'data/' + tilingDir + '/squares/cells.csv'
+    cellsDF[['X', 'Y', 'CountryCode']].to_csv(tilingPath, index=False)
 
     print('All Square-Cell-Tilings Created.')
 print('')
 
 
-
-
-
 def CreatePolygon(row):
     if 'LowerLeft' in row.keys():
         # squares and triangles
-        if (row['LowerLeft']&row['UpperRight']):
-            return shpPolygon([(row['X'],   row['Y']),
-                            (row['X']+1, row['Y']),
-                            (row['X']+1, row['Y']+1),
-                            (row['X'],   row['Y']+1)])
-        elif (row['UpperRight']):
-            return shpPolygon([(row['X'],   row['Y']+1),
-                            (row['X']+1, row['Y']),
-                            (row['X']+1, row['Y']+1)])
-        else: #LowerLeft
-            return shpPolygon([(row['X'],   row['Y']),
-                            (row['X']+1, row['Y']),
-                            (row['X'],   row['Y']+1)])
+        if row['LowerLeft'] & row['UpperRight']:
+            return shpPolygon([(row['X'], row['Y']),
+                               (row['X'] + 1, row['Y']),
+                               (row['X'] + 1, row['Y'] + 1),
+                               (row['X'], row['Y'] + 1)])
+        elif row['UpperRight']:
+            return shpPolygon([(row['X'], row['Y'] + 1),
+                               (row['X'] + 1, row['Y']),
+                               (row['X'] + 1, row['Y'] + 1)])
+        else:  # LowerLeft
+            return shpPolygon([(row['X'], row['Y']),
+                               (row['X'] + 1, row['Y']),
+                               (row['X'], row['Y'] + 1)])
     else:
-        return shpPolygon([(row['X'],   row['Y']),
-                        (row['X']+1, row['Y']),
-                        (row['X']+1, row['Y']+1),
-                        (row['X'],   row['Y']+1)])
+        return shpPolygon([(row['X'], row['Y']),
+                           (row['X'] + 1, row['Y']),
+                           (row['X'] + 1, row['Y'] + 1),
+                           (row['X'], row['Y'] + 1)])
 
 
-def BorderDf2BorderTuple(borderDF):
-    myBorder = tuple((zip(borderDF.X/1000, borderDF.Y/1000)))
-    return myBorder
-
+def BorderDf2BorderTuple(border_df):
+    border = tuple((zip(border_df.X / 1000, border_df.Y / 1000)))
+    return border
 
 
 print('Creating Border Data:')
 for tilingDir in tilingDirectories:
     # for both squares and squares+triangles
     for tilingStyle in ['squares_and_triangles', 'squares']:
-        tilingPath = 'data/'+tilingDir+'/'+tilingStyle+'/cells.csv'
+        tilingPath = 'data/' + tilingDir + '/' + tilingStyle + '/cells.csv'
         print(tilingDir + ' -- ' + tilingStyle)
 
         # load in cellsDF
@@ -71,9 +65,9 @@ for tilingDir in tilingDirectories:
         # get full set of country codes
         countryCodeList = pd.unique(cellsDF['CountryCode'])
 
-        #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+        # -#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
         #   prepare to iterate country by country   #
-        #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+        # -#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
         featureList = []
         polygonID = 0
         bordersDF = pd.DataFrame()
@@ -89,15 +83,15 @@ for tilingDir in tilingDirectories:
             unionPolygon = unary_union(countryPolyDF.tolist())
 
             # Now we need to handle "Polygon" vs "Multipolygon" differently
-            if unionPolygon.geom_type=='Polygon':
-                #-#-#-#-#-#-#-#
+            if unionPolygon.geom_type == 'Polygon':
+                # -#-#-#-#-#-#-#
                 #   Polygon   #
-                #-#-#-#-#-#-#-#
+                # -#-#-#-#-#-#-#
                 unionPolygon = orient(unionPolygon, -1)
-                polygonID = polygonID+1
+                polygonID = polygonID + 1
 
                 # popualte DF with data
-                borderDF = pd.DataFrame(unionPolygon.exterior.coords[:], columns=["X","Y"])
+                borderDF = pd.DataFrame(unionPolygon.exterior.coords[:], columns=["X", "Y"])
                 borderDF['PolygonID'] = polygonID
                 borderDF['CountryCode'] = countryCode
                 borderDF['BorderType'] = "Exterior"
@@ -110,10 +104,10 @@ for tilingDir in tilingDirectories:
                 myPolyBorders.append(myBorder)
 
                 # if there's a hole on the inside of our polygon - add that
-                if len(unionPolygon.interiors)>0:
+                if len(unionPolygon.interiors) > 0:
                     for intpoly in unionPolygon.interiors:
-                        polygonID = polygonID+1
-                        intborderDF = pd.DataFrame(intpoly.coords[:], columns=["X","Y"])
+                        polygonID = polygonID + 1
+                        intborderDF = pd.DataFrame(intpoly.coords[:], columns=["X", "Y"])
                         intborderDF['PolygonID'] = polygonID
                         intborderDF['CountryCode'] = countryCode
                         intborderDF['BorderType'] = "Interior"
@@ -125,19 +119,19 @@ for tilingDir in tilingDirectories:
                 # finalize DF and JSON before leaving loop
                 newBorderDF = borderDF
                 myP = Polygon(myPolyBorders)
-                myF = Feature(geometry=myP, properties={"id": str(countryCode)+'--'+str(polygonID)})
+                myF = Feature(geometry=myP, properties={"id": str(countryCode) + '--' + str(polygonID)})
 
             else:
-                #-#-#-#-#-#-#-#-#-#
+                # -#-#-#-#-#-#-#-#-#
                 #   MultiPolygon  #
-                #-#-#-#-#-#-#-#-#-#
+                # -#-#-#-#-#-#-#-#-#
                 allborderDF = pd.DataFrame()
-                myMultiPolyPolys = [] # initiate JSON object (MultiPolygon)
+                myMultiPolyPolys = []  # initiate JSON object (MultiPolygon)
 
                 for geom in unionPolygon.geoms:
                     geom = orient(geom, -1)
-                    polygonID = polygonID+1
-                    borderDF = pd.DataFrame(geom.exterior.coords[:], columns=["X","Y"])
+                    polygonID = polygonID + 1
+                    borderDF = pd.DataFrame(geom.exterior.coords[:], columns=["X", "Y"])
                     borderDF['PolygonID'] = polygonID
                     borderDF['CountryCode'] = countryCode
                     borderDF['BorderType'] = "Exterior"
@@ -149,10 +143,10 @@ for tilingDir in tilingDirectories:
                     myBorder = BorderDf2BorderTuple(borderDF)
                     myPolyBorders.append(myBorder)
 
-                    if len(geom.interiors)>0:
+                    if len(geom.interiors) > 0:
                         for intpoly in geom.interiors:
-                            polygonID = polygonID+1
-                            intborderDF = pd.DataFrame(intpoly.coords[:], columns=["X","Y"])
+                            polygonID = polygonID + 1
+                            intborderDF = pd.DataFrame(intpoly.coords[:], columns=["X", "Y"])
                             intborderDF['PolygonID'] = polygonID
                             intborderDF['CountryCode'] = countryCode
                             intborderDF['BorderType'] = "Interior"
@@ -166,7 +160,7 @@ for tilingDir in tilingDirectories:
                 # finalize DF and JSON before leaving loop
                 newBorderDF = allborderDF
                 myMP = MultiPolygon(myMultiPolyPolys)
-                myF = Feature(geometry=myMP, properties={"id": str(countryCode)+'--'+str(polygonID)})
+                myF = Feature(geometry=myMP, properties={"id": str(countryCode) + '--' + str(polygonID)})
 
             # add this new country's dataframe onto the aggregate dataframe
             bordersDF = pd.concat([bordersDF, newBorderDF])
@@ -174,20 +168,19 @@ for tilingDir in tilingDirectories:
 
         # now write everything to file for each tiling
         # First, the "borders.csv"
-        bordersDF.to_csv('data/'+tilingDir+'/'+tilingStyle+'/borders.csv', index=False)
+        bordersDF.to_csv('data/' + tilingDir + '/' + tilingStyle + '/borders.csv', index=False)
         # Next, the "geo.json"
         feature_collection = FeatureCollection(featureList)
-        geojson_path = 'data/'+tilingDir+'/'+tilingStyle+'/geo.json'
-        with open(geojson_path, 'w', encoding ='utf8') as geojson_file:
+        geojson_path = 'data/' + tilingDir + '/' + tilingStyle + '/geo.json'
+        with open(geojson_path, 'w', encoding='utf8') as geojson_file:
             dump(feature_collection, geojson_file)
         # Finally the "projected.geo.json", the "topo.json", and the "countries.svg"
-        projected_geojson_path   = 'data/'+tilingDir+'/'+tilingStyle+'/projected_geo.json'
-        projected_countries_path = 'data/'+tilingDir+'/'+tilingStyle+'/countries.svg'
-        topojson_path            = 'data/'+tilingDir+'/'+tilingStyle+'/topo.json'
-        os.system("geoproject 'd3.geoEquirectangular().fitSize([1000, 500], d)' < " + geojson_path + " > " + projected_geojson_path)
+        projected_geojson_path = 'data/' + tilingDir + '/' + tilingStyle + '/projected_geo.json'
+        projected_countries_path = 'data/' + tilingDir + '/' + tilingStyle + '/countries.svg'
+        topojson_path = 'data/' + tilingDir + '/' + tilingStyle + '/topo.json'
+        os.system(
+            "geoproject 'd3.geoEquirectangular().fitSize([1000, 500], d)' < " + geojson_path + " > " + projected_geojson_path)
         os.system("geo2svg -w 1000 -h 500 < " + projected_geojson_path + " > " + projected_countries_path)
-        os.system("geo2topo countries="+projected_geojson_path+" \
+        os.system("geo2topo countries=" + projected_geojson_path + " \
         | toposimplify -p 0.0005 \
         | topoquantize 1e9 > " + topojson_path)
-
-    
