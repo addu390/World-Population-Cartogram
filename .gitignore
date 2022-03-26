@@ -2,3 +2,4 @@
 .DS_Store
 borders.csv
 cells.csv
+__pycache__/

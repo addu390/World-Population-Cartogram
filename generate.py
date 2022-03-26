@@ -7,25 +7,25 @@ import pandas as pd
 from geojson import Feature, Polygon, MultiPolygon
 
 
-def generate_cells():
+def generate_cells(grid_filename, cell_filename):
     cells = []
 
-    with open('grid.asc', 'r') as f:
-        x = [[int(num) for num in line.split()] for line in f]
+    with open(grid_filename, 'r') as f:
+        x = [[int(float(num)) for num in line.split()] for line in f]
         for i in range(len(x)):
             for j in range(len(x[i])):
-                if x[i][j] != 32767:
+                if x[i][j] != 32767 and x[i][j] != -9999:
                     cells.append([j, i, x[i][j]])
 
     cells = np.array(sorted(cells, key=lambda a_entry: a_entry[2]))
-    with open("cells.csv", "w+") as csv_file:
+    with open(cell_filename, "w+") as csv_file:
         csv_writer = csv.writer(csv_file, delimiter=',')
         csv_writer.writerow(['X', 'Y', 'CountryCode'])
         csv_writer.writerows(cells)
 
 
-def generate_borders():
-    cells_df = pd.read_csv('cells.csv')
+def generate_borders(cell_filename, border_filename):
+    cells_df = pd.read_csv(cell_filename)
     country_code_list = pd.unique(cells_df['CountryCode'])
 
     feature_list = []
@@ -110,7 +110,7 @@ def generate_borders():
         borders_df = pd.concat([borders_df, new_border_df])
         feature_list.append(new_feature)
 
-    borders_df.to_csv('borders.csv', index=False)
+    borders_df.to_csv(border_filename, index=False)
 
 
 def create_polygon(row):
@@ -123,8 +123,3 @@ def create_polygon(row):
 def df_to_tuple(border_df):
     border = tuple((zip(border_df.X / 1000, border_df.Y / 1000)))
     return border
-
-
-if __name__ == "__main__":
-    generate_cells()
-    generate_borders()
