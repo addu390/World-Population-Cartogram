@@ -24,20 +24,7 @@ def generate_cells():
         csv_writer.writerows(cells)
 
 
-def create_polygon(row):
-    return shpPolygon([(row['X'], row['Y']),
-                       (row['X'] + 1, row['Y']),
-                       (row['X'] + 1, row['Y'] + 1),
-                       (row['X'], row['Y'] + 1)])
-
-
-def df_to_tuple(border_df):
-    border = tuple((zip(border_df.X / 1000, border_df.Y / 1000)))
-    return border
-
-
 def generate_borders():
-
     cells_df = pd.read_csv('cells.csv')
     country_code_list = pd.unique(cells_df['CountryCode'])
 
@@ -124,6 +111,18 @@ def generate_borders():
         feature_list.append(new_feature)
 
     borders_df.to_csv('borders.csv', index=False)
+
+
+def create_polygon(row):
+    return shpPolygon([(row['X'], row['Y']),
+                       (row['X'] + 1, row['Y']),
+                       (row['X'] + 1, row['Y'] + 1),
+                       (row['X'], row['Y'] + 1)])
+
+
+def df_to_tuple(border_df):
+    border = tuple((zip(border_df.X / 1000, border_df.Y / 1000)))
+    return border
 
 
 if __name__ == "__main__":
