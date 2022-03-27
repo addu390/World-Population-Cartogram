@@ -38,9 +38,6 @@ def generate_borders(cell_filename, border_filename):
         union_polygon = unary_union(country_poly_df.tolist())
 
         if union_polygon.geom_type == 'Polygon':
-            # -#-#-#-#-#-#-#
-            #   Polygon   #
-            # -#-#-#-#-#-#-#
             union_polygon = orient(union_polygon, -1)
             polygon_id = polygon_id + 1
 
@@ -70,9 +67,6 @@ def generate_borders(cell_filename, border_filename):
             new_feature = Feature(geometry=new_polygon, properties={"id": str(countryCode) + '--' + str(polygon_id)})
 
         else:
-            # -#-#-#-#-#-#-#-#-#
-            #   MultiPolygon  #
-            # -#-#-#-#-#-#-#-#-#
             all_border_df = pd.DataFrame()
             multi_polygons = []
 
@@ -106,7 +100,6 @@ def generate_borders(cell_filename, border_filename):
             multi_polygon = MultiPolygon(multi_polygons)
             new_feature = Feature(geometry=multi_polygon, properties={"id": str(countryCode) + '--' + str(polygon_id)})
 
-        # add this new country's dataframe onto the aggregate dataframe
         borders_df = pd.concat([borders_df, new_border_df])
         feature_list.append(new_feature)
 
