@@ -7,6 +7,13 @@ import pandas as pd
 from geojson import Feature, Polygon, MultiPolygon
 
 
+def generate_matrix(grid_filename, matrix_filename):
+    with open(grid_filename, 'r') as f:
+        input_array = [[int(float(num)) for num in line.split()] for line in f]
+        np_array = np.asarray(input_array)
+        pd.DataFrame(np_array).to_csv(matrix_filename)
+
+
 def generate_cells(grid_filename, cell_filename):
     cells = []
 

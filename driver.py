@@ -1,4 +1,4 @@
-from generate import generate_cells, generate_borders
+from generate import generate_cells, generate_borders, generate_matrix
 from worldmap import plot
 
 
@@ -8,5 +8,9 @@ def main():
     plot('cells.csv', 'borders.csv')
 
 
+def matrix():
+    generate_matrix('grid.asc', 'matrix.csv')
+
+
 if __name__ == "__main__":
-    main()
+    print("Our World in Data")
