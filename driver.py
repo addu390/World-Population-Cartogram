@@ -3,13 +3,13 @@ from worldmap import plot
 
 
 def main():
-    generate_cells('grid.asc', 'cells.csv')
-    generate_borders('cells.csv', 'borders.csv')
-    plot('cells.csv', 'borders.csv')
+    generate_cells('data/worldmap/grid.asc', 'data/worldmap/cells.csv')
+    generate_borders('data/worldmap/cells.csv', 'data/worldmap/borders.csv')
+    plot('data/worldmap/cells.csv', 'data/worldmap/borders.csv')
 
 
 def matrix():
-    generate_matrix('grid.asc', 'matrix.csv')
+    generate_matrix('data/worldmap/grid.asc', 'matrix.csv')
 
 
 if __name__ == "__main__":
