@@ -1,0 +1,28 @@
+{
+  "name": "population-cartogram",
+  "version": "1.0.0",
+  "description": "Population scaled cartogram - OWID",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Nothing here\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/addu390/population-cartogram.git"
+  },
+  "keywords": [
+    "cartogram"
+  ],
+  "dependencies": {
+    "d3-geo-projection": "^4.0.0",
+    "topojson-client": "^3.1.0",
+    "topojson-server": "^3.0.1",
+    "topojson-simplify": "^3.0.3"
+  },
+  "author": "Adesh Nalpet Adimurthy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/addu390/population-cartogram/issues"
+  },
+  "homepage": "https://github.com/addu390/population-cartogram#readme"
+}

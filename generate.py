@@ -1,10 +1,11 @@
+import os
 import csv
 import numpy as np
 from shapely.geometry import Polygon as shpPolygon
 from shapely.geometry.polygon import orient
 from shapely.ops import unary_union
 import pandas as pd
-from geojson import Feature, Polygon, MultiPolygon
+from geojson import Feature, Polygon, MultiPolygon, FeatureCollection, dump
 
 
 def generate_matrix(grid_filename, matrix_filename):
@@ -111,6 +112,20 @@ def generate_borders(cell_filename, border_filename):
         feature_list.append(new_feature)
 
     borders_df.to_csv(border_filename, index=False)
+    borders_df.to_csv(border_filename, index=False)
+    feature_collection = FeatureCollection(feature_list)
+    geo_path = 'geo.json'
+
+    with open(geo_path, 'w', encoding='utf8') as geojson_file:
+        dump(feature_collection, geojson_file)
+
+    projected_geo_path = 'projected_geo.json'
+    topo_path = 'topo.json'
+    os.system(
+        "npx geoproject 'd3.geoEquirectangular().fitSize([1000, 500], d)' < " + geo_path + " > " + projected_geo_path)
+    os.system("npx geo2topo tiles=" + projected_geo_path + " \
+            | npx toposimplify -p 0.0005 \
+            | npx topoquantize 1e9 > " + topo_path)
 
 
 def create_polygon(row):
