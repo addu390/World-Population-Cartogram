@@ -5,7 +5,7 @@ function ready(geo) {
     width = 2400 - margin.left - margin.right,
     height = 1200 - margin.top - margin.bottom;
 
-  let hexRadius = 5
+  let hexRadius = 3
   let hexDistance = hexRadius * 1.5
   let cols = width / hexDistance
 
@@ -76,11 +76,8 @@ function ready(geo) {
   
 }
 
-// Data load.
 const geoData = d3.json(
-  'https://raw.githubusercontent.com/larsvers/map-store/master/us_mainland_geo.json'
-  // 'https://raw.githubusercontent.com/larsvers/map-store/master/europe_geo.json'
-  // 'https://raw.githubusercontent.com/mattdzugan/World-Population-Cartogram/master/data/year_2018__cell_500k/squares/geo.json'
+  'https://raw.githubusercontent.com/addu390/population-cartogram/master/data/population/2018/geo.json'
 );
 
 Promise.all([geoData]).then(res => {

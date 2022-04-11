@@ -2,9 +2,12 @@
   "name": "population-cartogram",
   "version": "1.0.0",
   "description": "Population scaled cartogram - OWID",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Nothing here\" && exit 1"
+    "clean": "rm -rf .parcel-cache && rm -rf dist",
+    "build": "npm run build:index",
+    "build:index": "parcel build index.html --dist-dir dist --public-url .",
+    "deploy": "npm run clean && npm run build && gh-pages -d dist",
+    "dev": "parcel index.html"
   },
   "repository": {
     "type": "git",
@@ -29,6 +32,7 @@
   },
   "homepage": "https://github.com/addu390/population-cartogram#readme",
   "devDependencies": {
+    "gh-pages": "^2.2.0",
     "parcel": "^2.4.1"
   }
 }
