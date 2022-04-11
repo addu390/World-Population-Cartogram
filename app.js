@@ -1,8 +1,41 @@
-function ready(geo, userData) {
-  // Container SVG.
+import { hexbin } from 'd3-hexbin'
+
+function ready(geo) {
   const margin = { top: 30, right: 30, bottom: 30, left: 30 },
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    width = 2400 - margin.left - margin.right,
+    height = 1200 - margin.top - margin.bottom;
+
+  let hexRadius = 5
+  let hexDistance = hexRadius * 1.5
+  let cols = width / hexDistance
+
+  let new_projection = d3.geoNaturalEarth1().fitExtent([[0, height * 0.05], [width, height * 0.95]], geo)
+
+  let rows = Math.ceil(height / hexDistance);
+
+  let pointGrid = d3.range(rows * cols).map(function (el, i) {
+    return {
+      x: Math.floor(i % cols) * hexDistance,
+      y: Math.floor(i / cols) * hexDistance,
+      datapoint: 0
+    };
+  });
+  console.log(pointGrid)
+  
+  let features = []
+
+  for (let i = 0; i < geo.features.length; i++) {
+    features[i] = []
+    if (geo.features[i].geometry.type == "MultiPolygon") {
+      for (let j = 0; j < geo.features[i].geometry.coordinates.length; j++) {
+        features[i] = features[i].concat(geo.features[i].geometry.coordinates[j][0])
+      }
+    }
+    
+    else if (geo.features[i].geometry.type == "Polygon") {
+      features[i] = features[i].concat(geo.features[i].geometry.coordinates[0])
+    }
+  }
 
   const svg = d3.select('#container')
     .append('svg')
@@ -11,62 +44,47 @@ function ready(geo, userData) {
     .append('g')
     .attr('transform', `translate(${margin.left} ${margin.top})`);
 
-  // Projection and path.
-  const projection = d3.geoAlbers().fitSize([width, height], geo);
-  const geoPath = d3.geoPath().projection(projection);
+  for (let i = 0; i < features.length; i++) {
+    let polygonPoints = features[i].map(el => new_projection(el));
+    console.log(polygonPoints)
 
-  // Prep user data.
-  userData.forEach(site => {
-    const coords = projection([+site.lng, +site.lat]);
-    site.x = coords[0];
-    site.y = coords[1];
-  });
+  let usPoints = pointGrid.reduce(function (arr, el) {
+    if (d3.polygonContains(polygonPoints, [el.x, el.y])) arr.push(el);
+    return arr;
+  }, [])
+  console.log(usPoints)
 
-  // Create a hexgrid generator.
-  const hexgrid = d3.hexgrid()
-    .extent([width, height])
-    .geography(geo)
-    .pathGenerator(geoPath)
-    .projection(projection)
-    .hexRadius(5);
+  let new_hexbin = hexbin()
+    .radius(hexRadius)
+    .x(function (d) { return d.x; })
+    .y(function (d) { return d.y; })
 
-  // Instantiate the generator.
-  const hex = hexgrid(userData);
+  let hexPoints = new_hexbin(usPoints)
 
-  // Create exponential colorScale.
-  const colourScale = d3
-    .scaleSequential(function(t) {
-      var tNew = Math.pow(t, 10);
-      return d3.interpolateViridis(tNew);
-    })
-    .domain([...hex.grid.extentPointDensity].reverse());
+  svg.append('g').attr('id', 'hexes')
+    .selectAll('.hex')
+    .data(hexPoints)
+    .enter().append('path')
+    .attr('class', 'hex')
+    .attr('transform', function (d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
+    .attr('d', new_hexbin.hexagon())
+    .style('fill', 'none')
+    .style('stroke', '#' + Math.floor(Math.random()*16777215).toString(16))
+    .style('stroke-width', 1);
+  }
 
-  // Draw the hexes.
-  svg
-    .append('g')
-    .selectAll('path')
-    .data(hex.grid.layout)
-    .enter()
-    .append('path')
-    .attr('d', hex.hexagon())
-    .attr('transform', d => `translate(${d.x} ${d.y})`)
-    .style(
-      'fill',
-      d => (!d.pointDensity ? '#fff' : colourScale(d.pointDensity))
-    )
-    .style('stroke', '#F4EB9F');
+  
 }
 
 // Data load.
 const geoData = d3.json(
-  'https://raw.githubusercontent.com/mattdzugan/World-Population-Cartogram/master/data/year_2018__cell_500k/squares/geo.json'
-);
-const points = d3.json(
-  './markets.json'
+  'https://raw.githubusercontent.com/larsvers/map-store/master/us_mainland_geo.json'
+  // 'https://raw.githubusercontent.com/larsvers/map-store/master/europe_geo.json'
+  // 'https://raw.githubusercontent.com/mattdzugan/World-Population-Cartogram/master/data/year_2018__cell_500k/squares/geo.json'
 );
 
-Promise.all([geoData, points]).then(res => {
-  let [geoData, userData] = res;
+Promise.all([geoData]).then(res => {
+  let [geoData] = res;
 
-  ready(geoData, userData);
+  ready(geoData);
 });
