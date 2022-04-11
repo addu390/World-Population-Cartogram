@@ -10,6 +10,7 @@ Raster Dataset: [https://sedac.ciesin.columbia.edu/data/set/gpw-v4-national-iden
 npm install d3-geo-projection
 npm install topojson-server
 npm install topojson-simplify
+npm install d3-hexgrid
 ```
 
 ## 📒 Citations

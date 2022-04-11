@@ -3,3 +3,4 @@
 __pycache__/
 matrix.csv
 node_modules
+package-lock.json
