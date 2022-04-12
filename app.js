@@ -90,8 +90,6 @@ function plot_map(geo, hexRadius) {
       .style('stroke', '#000')
       .style('stroke-width', 1);
   }
-
-
 }
 
 start()
