@@ -22,8 +22,8 @@ function start() {
 function plot_map(geo, hexRadius) {
 
   const margin = { top: 30, right: 30, bottom: 30, left: 30 },
-    width = 1300 - margin.left - margin.right,
-    height = 800 - margin.top - margin.bottom;
+    width = 1200 - margin.left - margin.right,
+    height = 650 - margin.top - margin.bottom;
 
   let hexDistance = hexRadius * 1.5
   let cols = width / hexDistance
