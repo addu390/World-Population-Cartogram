@@ -74,7 +74,7 @@ function ready(geo) {
 }
 
 const geoData = d3.json(
-  'https://michaelminn.net/tutorials/data/2020-cartogram-world-noncontinuous.geojson'
+  'https://raw.githubusercontent.com/addu390/population-cartogram/master/data/population/2018/geo.json'
 );
 
 Promise.all([geoData]).then(res => {
