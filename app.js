@@ -20,8 +20,7 @@ function ready(geo) {
       datapoint: 0
     };
   });
-  console.log(pointGrid)
-  
+
   let features = []
 
   for (let i = 0; i < geo.features.length; i++) {
@@ -31,7 +30,7 @@ function ready(geo) {
         features[i] = features[i].concat(geo.features[i].geometry.coordinates[j][0])
       }
     }
-    
+
     else if (geo.features[i].geometry.type == "Polygon") {
       features[i] = features[i].concat(geo.features[i].geometry.coordinates[0])
     }
@@ -46,38 +45,36 @@ function ready(geo) {
 
   for (let i = 0; i < features.length; i++) {
     let polygonPoints = features[i].map(el => new_projection(el));
-    console.log(polygonPoints)
 
-  let usPoints = pointGrid.reduce(function (arr, el) {
-    if (d3.polygonContains(polygonPoints, [el.x, el.y])) arr.push(el);
-    return arr;
-  }, [])
-  console.log(usPoints)
+    let usPoints = pointGrid.reduce(function (arr, el) {
+      if (d3.polygonContains(polygonPoints, [el.x, el.y])) arr.push(el);
+      return arr;
+    }, [])
 
-  let new_hexbin = hexbin()
-    .radius(hexRadius)
-    .x(function (d) { return d.x; })
-    .y(function (d) { return d.y; })
+    let new_hexbin = hexbin()
+      .radius(hexRadius)
+      .x(function (d) { return d.x; })
+      .y(function (d) { return d.y; })
 
-  let hexPoints = new_hexbin(usPoints)
+    let hexPoints = new_hexbin(usPoints)
 
-  svg.append('g').attr('id', 'hexes')
-    .selectAll('.hex')
-    .data(hexPoints)
-    .enter().append('path')
-    .attr('class', 'hex')
-    .attr('transform', function (d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
-    .attr('d', new_hexbin.hexagon())
-    .style('fill', 'none')
-    .style('stroke', '#' + Math.floor(Math.random()*16777215).toString(16))
-    .style('stroke-width', 1);
+    svg.append('g').attr('id', 'hexes')
+      .selectAll('.hex')
+      .data(hexPoints)
+      .enter().append('path')
+      .attr('class', 'hex')
+      .attr('transform', function (d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
+      .attr('d', new_hexbin.hexagon())
+      .style('fill', 'none')
+      .style('stroke', '#' + Math.floor(Math.random() * 16777215).toString(16))
+      .style('stroke-width', 1);
   }
 
-  
+
 }
 
 const geoData = d3.json(
-  'https://raw.githubusercontent.com/addu390/population-cartogram/master/data/population/2018/geo.json'
+  'https://michaelminn.net/tutorials/data/2020-cartogram-world-noncontinuous.geojson'
 );
 
 Promise.all([geoData]).then(res => {
