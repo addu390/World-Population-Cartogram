@@ -22,8 +22,8 @@ function start() {
 function plot_map(geo, hexRadius) {
 
   const margin = { top: 30, right: 30, bottom: 30, left: 30 },
-    width = 1200 - margin.left - margin.right,
-    height = 650 - margin.top - margin.bottom;
+    width = 1250 - margin.left - margin.right,
+    height = 750 - margin.top - margin.bottom;
 
   let hexDistance = hexRadius * 1.5
   let cols = width / hexDistance
@@ -57,12 +57,31 @@ function plot_map(geo, hexRadius) {
 
   d3.select('#container').selectAll("*").remove()
 
+  let new_hexbin = hexbin()
+    .radius(hexRadius)
+    .x(function (d) { return d.x; })
+    .y(function (d) { return d.y; })
+
   const svg = d3.select('#container')
     .append('svg')
     .attr('width', width + margin.left + margin.top)
     .attr('height', height + margin.top + margin.bottom)
     .append('g')
     .attr('transform', `translate(${margin.left} ${margin.top})`);
+
+  svg.append('g').attr('id', 'hexes')
+    .selectAll('.hex')
+    .data(new_hexbin(pointGrid))
+    .enter().append('path')
+    .attr('class', 'hex')
+    .attr('transform', function (d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
+    .attr('d', new_hexbin.hexagon())
+    .style('fill', '#fff')
+    .style('stroke', '#e0e0e0')
+    .style('stroke-width', 1);
+
+  let colors = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50',
+    '#f1c40f', '#e67e22', '#e74c3c', '#ecf0f1', '#95a5a6', '#f39c12', '#d35400', '#c0392b', '#bdc3c7', '#7f8c8d']
 
   for (let i = 0; i < features.length; i++) {
     let polygonPoints = features[i].map(el => new_projection(el));
@@ -71,11 +90,6 @@ function plot_map(geo, hexRadius) {
       if (d3.polygonContains(polygonPoints, [el.x, el.y])) arr.push(el);
       return arr;
     }, [])
-
-    let new_hexbin = hexbin()
-      .radius(hexRadius)
-      .x(function (d) { return d.x; })
-      .y(function (d) { return d.y; })
 
     let hexPoints = new_hexbin(usPoints)
 
@@ -86,10 +100,26 @@ function plot_map(geo, hexRadius) {
       .attr('class', 'hex')
       .attr('transform', function (d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
       .attr('d', new_hexbin.hexagon())
-      .style('fill', '#' + Math.floor(Math.random() * 16777215).toString(16))
+      .style('fill', colors[i % 19])
       .style('stroke', '#000')
-      .style('stroke-width', 1);
+      .style('stroke-width', 1)
+      .on("mouseover", mover)
+      .on("mouseout", mout);
   }
+}
+
+function mover(d) {
+  var el = d3.select(this)
+    .transition()
+    .duration(10)
+    .style("fill-opacity", 0.6);
+}
+
+function mout(d) {
+  var el = d3.select(this)
+    .transition()
+    .duration(1000)
+    .style("fill-opacity", 1);
 }
 
 start()
