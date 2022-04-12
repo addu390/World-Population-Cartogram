@@ -1,11 +1,30 @@
 import { hexbin } from 'd3-hexbin'
 
-function ready(geo) {
-  const margin = { top: 30, right: 30, bottom: 30, left: 30 },
-    width = 2400 - margin.left - margin.right,
-    height = 1200 - margin.top - margin.bottom;
+let errorInputElement = document.querySelector('input#error');
 
-  let hexRadius = 3
+errorInputElement.addEventListener('click', () => {
+  console.log(errorInputElement.value)
+  start()
+});
+
+function start() {
+  let hexRadius = errorInputElement.value
+  const geoData = d3.json(
+    'https://raw.githubusercontent.com/addu390/population-cartogram/master/data/population/2018/geo.json'
+  );
+  Promise.all([geoData]).then(res => {
+    let [geoData] = res;
+
+    plot_map(geoData, hexRadius);
+  });
+}
+
+function plot_map(geo, hexRadius) {
+
+  const margin = { top: 30, right: 30, bottom: 30, left: 30 },
+    width = 1300 - margin.left - margin.right,
+    height = 800 - margin.top - margin.bottom;
+
   let hexDistance = hexRadius * 1.5
   let cols = width / hexDistance
 
@@ -36,6 +55,8 @@ function ready(geo) {
     }
   }
 
+  d3.select('#container').selectAll("*").remove()
+
   const svg = d3.select('#container')
     .append('svg')
     .attr('width', width + margin.left + margin.top)
@@ -65,20 +86,12 @@ function ready(geo) {
       .attr('class', 'hex')
       .attr('transform', function (d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
       .attr('d', new_hexbin.hexagon())
-      .style('fill', 'none')
-      .style('stroke', '#' + Math.floor(Math.random() * 16777215).toString(16))
+      .style('fill', '#' + Math.floor(Math.random() * 16777215).toString(16))
+      .style('stroke', '#000')
       .style('stroke-width', 1);
   }
 
 
 }
 
-const geoData = d3.json(
-  'https://raw.githubusercontent.com/addu390/population-cartogram/master/data/population/2018/geo.json'
-);
-
-Promise.all([geoData]).then(res => {
-  let [geoData] = res;
-
-  ready(geoData);
-});
+start()
