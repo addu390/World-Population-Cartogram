@@ -1,14 +1,17 @@
 import { hexbin } from 'd3-hexbin'
 
-let errorInputElement = document.querySelector('input#error');
+let colors = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50',
+  '#f1c40f', '#e67e22', '#e74c3c', '#ecf0f1', '#95a5a6', '#f39c12', '#d35400', '#c0392b', '#bdc3c7', '#7f8c8d']
 
-errorInputElement.addEventListener('click', () => {
-  console.log(errorInputElement.value)
+let radiusInput = document.querySelector('input#error');
+
+radiusInput.addEventListener('click', () => {
+  console.log(radiusInput.value)
   start()
 });
 
 function start() {
-  let hexRadius = errorInputElement.value
+  let hexRadius = radiusInput.value
   const geoData = d3.json(
     'https://raw.githubusercontent.com/addu390/population-cartogram/master/data/population/2018/geo.json'
   );
@@ -78,10 +81,8 @@ function plot_map(geo, hexRadius) {
     .attr('d', new_hexbin.hexagon())
     .style('fill', '#fff')
     .style('stroke', '#e0e0e0')
-    .style('stroke-width', 1);
-
-  let colors = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50',
-    '#f1c40f', '#e67e22', '#e74c3c', '#ecf0f1', '#95a5a6', '#f39c12', '#d35400', '#c0392b', '#bdc3c7', '#7f8c8d']
+    .style('stroke-width', 1)
+    .on("click", mclick);
 
   for (let i = 0; i < features.length; i++) {
     let polygonPoints = features[i].map(el => new_projection(el));
@@ -103,6 +104,7 @@ function plot_map(geo, hexRadius) {
       .style('fill', colors[i % 19])
       .style('stroke', '#000')
       .style('stroke-width', 1)
+      .on("click", mclick)
       .on("mouseover", mover)
       .on("mouseout", mout);
   }
@@ -112,13 +114,26 @@ function mover(d) {
   var el = d3.select(this)
     .transition()
     .duration(10)
-    .style("fill-opacity", 0.6);
+    .style("fill-opacity", 0.9);
+}
+
+function mclick(d) {
+  let selectElement = document.querySelector('#label-option');
+  if (selectElement.value == "Remove") {
+    d3.select(this).remove()
+  } else {
+    let colorElement = document.querySelector('#color-option');
+    d3.select(this)
+      .style('stroke-width', 1)
+      .style('fill', colorElement.value)
+      .style('stroke', '#000')
+  }
 }
 
 function mout(d) {
-  var el = d3.select(this)
+  d3.select(this)
     .transition()
-    .duration(1000)
+    .duration(10)
     .style("fill-opacity", 1);
 }
 
