@@ -82,7 +82,7 @@ function plot_map(geo, hexRadius) {
     .style('fill', '#fff')
     .style('stroke', '#e0e0e0')
     .style('stroke-width', 1)
-    .on("click", mclick);
+    .on("click", mclickBase);
 
   for (let i = 0; i < features.length; i++) {
     let polygonPoints = features[i].map(el => new_projection(el));
@@ -117,16 +117,36 @@ function mover(d) {
     .style("fill-opacity", 0.9);
 }
 
-function mclick(d) {
+function mclickBase(d) {
   let selectElement = document.querySelector('#label-option');
   if (selectElement.value == "Remove") {
-    d3.select(this).remove()
+    d3.select(this)
+      .style('fill', '#fff')
+      .style('stroke', '#e0e0e0')
   } else {
     let colorElement = document.querySelector('#color-option');
     d3.select(this)
       .style('stroke-width', 1)
       .style('fill', colorElement.value)
       .style('stroke', '#000')
+      .on("mouseover", mover)
+      .on("mouseout", mout);
+  }
+}
+
+function mclick(d) {
+  let selectElement = document.querySelector('#label-option');
+  if (selectElement.value == "Remove") {
+    d3.select(this)
+      .remove()
+  } else {
+    let colorElement = document.querySelector('#color-option');
+    d3.select(this)
+      .style('stroke-width', 1)
+      .style('fill', colorElement.value)
+      .style('stroke', '#000')
+      .on("mouseover", mover)
+      .on("mouseout", mout);
   }
 }
 
