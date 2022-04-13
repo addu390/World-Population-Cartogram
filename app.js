@@ -187,8 +187,8 @@ function dragged(event, d) {
   let hexRadius = radiusInput.value
   var x = event.x
   var y = event.y
-  gridX = roundX(Math.max(hexRadius, Math.min(width - hexRadius, x)), hexRadius),
-    gridY = roundY(Math.max(hexRadius, Math.min(height - hexRadius, y)), hexRadius);
+  gridX = roundX(Math.max(hexRadius, Math.min(width - hexRadius, x)), hexRadius);
+  gridY = roundY(Math.max(hexRadius, Math.min(height - hexRadius, y)), hexRadius);
   d3.select(this)
     .attr("x", d.x = gridX)
     .attr("y", d.y = gridY)
