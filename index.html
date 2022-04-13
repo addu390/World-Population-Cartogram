@@ -29,11 +29,6 @@
       step="1" oninput="amount.value=radius.value" />
     <output id="amount" name="amount" for="radius">6</output>
 
-    <select id="label-option" class="right" style="height: 25px;">
-      <option>Color</option>
-      <option>Remove</option>
-    </select>
-
     <input type="color" list="presetColors" id="color-option" value="#8e44ad" class="right" style="height: 25px;">
     <datalist id="presetColors">
       <option>#1abc9c</option>
@@ -58,7 +53,12 @@
       <option>#7f8c8d</option>
     </datalist>
 
-    <span class="right">Add/Remove cells &nbsp; </span>
+    <select id="label-option" class="right" style="height: 25px;">
+      <option>Add</option>
+      <option>Remove</option>
+    </select>
+
+    <span class="right">Drag and Drop cell | Double click on the cell to Add/Remove: &nbsp; </span>
 
     <div id="container"></div>
     <script src="app.js" type="module"></script>

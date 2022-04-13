@@ -10,6 +10,11 @@ radiusInput.addEventListener('click', () => {
   start()
 });
 
+
+const margin = { top: 30, right: 30, bottom: 30, left: 30 },
+  width = 1250 - margin.left - margin.right,
+  height = 750 - margin.top - margin.bottom;
+
 function start() {
   let hexRadius = radiusInput.value
   const geoData = d3.json(
@@ -23,10 +28,6 @@ function start() {
 }
 
 function plot_map(geo, hexRadius) {
-
-  const margin = { top: 30, right: 30, bottom: 30, left: 30 },
-    width = 1250 - margin.left - margin.right,
-    height = 750 - margin.top - margin.bottom;
 
   let hexDistance = hexRadius * 1.5
   let cols = width / hexDistance
@@ -100,13 +101,19 @@ function plot_map(geo, hexRadius) {
       .enter().append('path')
       .attr('class', 'hex')
       .attr('transform', function (d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
+      .attr("x", function (d) { return d.x; })
+      .attr("y", function (d) { return d.y; })
       .attr('d', new_hexbin.hexagon())
       .style('fill', colors[i % 19])
       .style('stroke', '#000')
       .style('stroke-width', 1)
       .on("click", mclick)
       .on("mouseover", mover)
-      .on("mouseout", mout);
+      .on("mouseout", mout)
+      .call(d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended));
   }
 }
 
@@ -133,6 +140,10 @@ function mclickBase(d) {
       .style('stroke', '#000')
       .on("mouseover", mover)
       .on("mouseout", mout)
+      .call(d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended))
       .raise();
   }
 }
@@ -140,6 +151,7 @@ function mclickBase(d) {
 function mclick(d) {
   let selectElement = document.querySelector('#label-option');
   if (selectElement.value == "Remove") {
+    console.log("here")
     d3.select(this)
       .remove()
   } else {
@@ -150,6 +162,10 @@ function mclick(d) {
       .style('stroke', '#000')
       .on("mouseover", mover)
       .on("mouseout", mout)
+      .call(d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended))
       .raise();
   }
 }
@@ -159,6 +175,39 @@ function mout(d) {
     .transition()
     .duration(10)
     .style("fill-opacity", 1);
+}
+
+function dragstarted(event, d) {
+  console.log("drag")
+  d.fixed = false
+  d3.select(this).raise();
+}
+
+function dragged(event, d) {
+  let hexRadius = radiusInput.value
+  var x = event.x
+  var y = event.y
+  gridX = roundX(Math.max(hexRadius, Math.min(width - hexRadius, x)), hexRadius),
+    gridY = roundY(Math.max(hexRadius, Math.min(height - hexRadius, y)), hexRadius);
+  d3.select(this)
+    .attr("x", d.x = gridX)
+    .attr("y", d.y = gridY)
+    .attr('transform', function (d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
+}
+
+function dragended(event, d) {
+  d.fixed = true
+}
+
+function roundX(p, n) {
+  var diameter = n * 2
+  var side = diameter * 0.866
+  return p % side < side ? p - (p % side) : p + n - (p % side);
+}
+
+function roundY(p, n) {
+  var side = n * 3
+  return p % side < side ? p - (p % side) : p + n - (p % side);
 }
 
 start()
