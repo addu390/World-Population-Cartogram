@@ -201,7 +201,7 @@ function round(x, y, n) {
   var gridx
   var gridy
 
-  factor = Math.sqrt(3) / 2
+  var factor = Math.sqrt(3) / 2
 
   var d = n * 2
   var sx = d * factor
