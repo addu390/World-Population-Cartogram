@@ -201,16 +201,18 @@ function round(x, y, n) {
   var gridx
   var gridy
 
+  factor = Math.sqrt(3) / 2
+
   var d = n * 2
-  var sx = d * 0.8660254
+  var sx = d * factor
   var sy = n * 3
 
   if (y % sy < n) {
     gridy = y - (y % sy)
     gridx = x - (x % sx)
   } else {
-    gridy = y + (sx) - (y % sy);
-    gridx = x + (n * 0.8660254) - (x % sx);
+    gridy = y + (d - (n * factor) / 2) - (y % sy);
+    gridx = x + (n * factor) - (x % sx);
   }
 
   return [gridx, gridy]
