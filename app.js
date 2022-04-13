@@ -117,12 +117,14 @@ function mover(d) {
     .style("fill-opacity", 0.9);
 }
 
+
 function mclickBase(d) {
   let selectElement = document.querySelector('#label-option');
   if (selectElement.value == "Remove") {
     d3.select(this)
       .style('fill', '#fff')
       .style('stroke', '#e0e0e0')
+      .lower();
   } else {
     let colorElement = document.querySelector('#color-option');
     d3.select(this)
@@ -130,7 +132,8 @@ function mclickBase(d) {
       .style('fill', colorElement.value)
       .style('stroke', '#000')
       .on("mouseover", mover)
-      .on("mouseout", mout);
+      .on("mouseout", mout)
+      .raise();
   }
 }
 
@@ -146,7 +149,8 @@ function mclick(d) {
       .style('fill', colorElement.value)
       .style('stroke', '#000')
       .on("mouseover", mover)
-      .on("mouseout", mout);
+      .on("mouseout", mout)
+      .raise();
   }
 }
 
