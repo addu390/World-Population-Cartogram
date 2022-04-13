@@ -178,7 +178,6 @@ function mout(d) {
 }
 
 function dragstarted(event, d) {
-  console.log("drag")
   d.fixed = false
   d3.select(this).raise();
 }
@@ -187,11 +186,10 @@ function dragged(event, d) {
   let hexRadius = radiusInput.value
   var x = event.x
   var y = event.y
-  var gridX = roundX(Math.max(hexRadius, Math.min(width - hexRadius, x)), hexRadius);
-  var gridY = roundY(Math.max(hexRadius, Math.min(height - hexRadius, y)), hexRadius);
+  var grids = round(x, y, hexRadius);
   d3.select(this)
-    .attr("x", d.x = gridX)
-    .attr("y", d.y = gridY)
+    .attr("x", d.x = grids[0])
+    .attr("y", d.y = grids[1])
     .attr('transform', function (d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
 }
 
@@ -199,15 +197,23 @@ function dragended(event, d) {
   d.fixed = true
 }
 
-function roundX(p, n) {
-  var diameter = n * 2
-  var side = diameter * 0.866
-  return p % side < side ? p - (p % side) : p + n - (p % side);
-}
+function round(x, y, n) {
+  var gridx
+  var gridy
 
-function roundY(p, n) {
-  var side = n * 3
-  return p % side < side ? p - (p % side) : p + n - (p % side);
+  var d = n * 2
+  var sx = d * 0.8660254
+  var sy = n * 3
+
+  if (y % sy < n) {
+    gridy = y - (y % sy)
+    gridx = x - (x % sx)
+  } else {
+    gridy = y + (sx) - (y % sy);
+    gridx = x + (n * 0.8660254) - (x % sx);
+  }
+
+  return [gridx, gridy]
 }
 
 start()
