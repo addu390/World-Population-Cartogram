@@ -16,6 +16,7 @@
       -webkit-transform: translate(-50%, -50%);
       transform: translate(-50%, -50%);
     }
+
     .right {
       float: right;
     }
@@ -24,13 +25,15 @@
 
 <body>
   <div class="content">
-    Hexagon Radius &nbsp;<input type="range" id="error" min="2" max="12" style="width: 20%" value="6" />
-    
+    Hexagon Radius &nbsp;<input type="range" id="radius" name="radius" min="2" max="12" style="width: 20%" value="6"
+      step="1" oninput="amount.value=radius.value" />
+    <output id="amount" name="amount" for="radius">6</output>
+
     <select id="label-option" class="right" style="height: 25px;">
       <option>Color</option>
       <option>Remove</option>
     </select>
-    
+
     <input type="color" list="presetColors" id="color-option" value="#8e44ad" class="right" style="height: 25px;">
     <datalist id="presetColors">
       <option>#1abc9c</option>
