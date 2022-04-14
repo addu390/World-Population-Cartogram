@@ -31,7 +31,8 @@
       height: 100%;
     }
 
-    .loader {
+    .loader,
+    #page-loader {
       z-index: 3;
       border: 6px solid #f3f3f3;
       border-radius: 50%;
@@ -69,11 +70,22 @@
     .right {
       float: right;
     }
+
+    .center {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
   </style>
 </head>
 
 <body>
   <div class="content">
+
+    <div id="page-loader" class="center"></div>
 
     <div class="loader-container" id="loader">
       <div class="loader"></div>
@@ -118,7 +130,19 @@
 
     <script src="app.js" type="module"></script>
   </div>
-  <br>
+  <script>
+    document.onreadystatechange = function () {
+      if (document.readyState !== "complete") {
+        document.querySelector("body").style.visibility = "hidden";
+        document.querySelector("#page-loader").style.visibility = "visible";
+      } else {
+        setTimeout(function () {
+          document.querySelector("#page-loader").style.display = "none";
+          document.querySelector("body").style.visibility = "visible";
+        }, 1000);
+      }
+    };
+  </script>
 
 </body>
 
