@@ -12,9 +12,10 @@ radiusInput.addEventListener('click', () => {
   start()
 });
 
-const margin = { top: 25, right: 10, bottom: 35, left: 10 },
-  width = 1250 - margin.left - margin.right,
-  height = 750 - margin.top - margin.bottom;
+const margin = { top: 25, right: 10, bottom: 35, left: 10 };
+const width = 1250 - margin.left - margin.right;
+const height = 750 - margin.top - margin.bottom;
+const strokeWidth = 0.5
 
 function start() {
   let hexRadius = radiusInput.value
@@ -33,7 +34,7 @@ function plot_map(geo, hexRadius) {
 
   let hexDistance = hexRadius * 1.5
   let cols = width / hexDistance
-  let new_projection = d3.geoNaturalEarth1().fitExtent([[0, height * 0.05], [width, height * 0.95]], geo)
+  let newProjection = d3.geoNaturalEarth1().fitExtent([[0, height * 0.05], [width, height * 0.95]], geo)
   let rows = Math.ceil(height / hexDistance);
   let pointGrid = d3.range(rows * cols).map(function (el, i) {
     return {
@@ -45,20 +46,24 @@ function plot_map(geo, hexRadius) {
 
   let features = []
   for (let i = 0; i < geo.features.length; i++) {
-    features[i] = []
+    var tempFeatures = []
     if (geo.features[i].geometry.type == "MultiPolygon") {
       for (let j = 0; j < geo.features[i].geometry.coordinates.length; j++) {
-        features[i] = features[i].concat(geo.features[i].geometry.coordinates[j][0])
+        tempFeatures = tempFeatures.concat(geo.features[i].geometry.coordinates[j][0])
       }
     }
     else if (geo.features[i].geometry.type == "Polygon") {
-      features[i] = features[i].concat(geo.features[i].geometry.coordinates[0])
+      tempFeatures = tempFeatures.concat(geo.features[i].geometry.coordinates[0])
+    }
+    features[i] = {
+      "coordinates": tempFeatures,
+      "properties": geo.features[i].properties
     }
   }
 
   d3.select('#container').selectAll("*").remove()
 
-  let new_hexbin = hexbin()
+  let newHexbin = hexbin()
     .radius(hexRadius)
     .x(function (d) { return d.x; })
     .y(function (d) { return d.y; })
@@ -72,37 +77,38 @@ function plot_map(geo, hexRadius) {
 
   svg.append('g').attr('id', 'hexes')
     .selectAll('.hex')
-    .data(new_hexbin(pointGrid))
+    .data(newHexbin(pointGrid))
     .enter().append('path')
     .attr('class', 'hex')
     .attr('transform', function (d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
-    .attr('d', new_hexbin.hexagon())
+    .attr('d', newHexbin.hexagon())
     .style('fill', '#fff')
     .style('stroke', '#e0e0e0')
-    .style('stroke-width', 0.5)
+    .style('stroke-width', strokeWidth)
     .on("click", mclickBase);
 
   for (let i = 0; i < features.length; i++) {
-    let polygonPoints = features[i].map(el => new_projection(el));
+    let polygonPoints = features[i].coordinates.map(el => newProjection(el));
     let usPoints = pointGrid.reduce(function (arr, el) {
       if (d3.polygonContains(polygonPoints, [el.x, el.y])) arr.push(el);
       return arr;
     }, [])
 
-    let hexPoints = new_hexbin(usPoints)
+    let hexPoints = newHexbin(usPoints)
 
-    svg.append('g').attr('id', 'hexes')
+    svg.append('g')
+      .attr('id', 'hexes')
       .selectAll('.hex')
       .data(hexPoints)
       .enter().append('path')
-      .attr('class', 'hex')
+      .attr('class', 'hex' + features[i].properties.id)
       .attr('transform', function (d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
       .attr("x", function (d) { return d.x; })
       .attr("y", function (d) { return d.y; })
-      .attr('d', new_hexbin.hexagon())
+      .attr('d', newHexbin.hexagon())
       .style('fill', colors[i % 19])
       .style('stroke', '#000')
-      .style('stroke-width', 0.5)
+      .style('stroke-width', strokeWidth)
       .on("click", mclick)
       .on("mouseover", mover)
       .on("mouseout", mout)
@@ -114,12 +120,13 @@ function plot_map(geo, hexRadius) {
 }
 
 function mover(d) {
-  var el = d3.select(this)
+  klass = d3.select(this).attr("class")
+  d3.selectAll("." + klass);
+  d3.select(this)
     .transition()
     .duration(10)
     .style("fill-opacity", 0.9);
 }
-
 
 function mclickBase(d) {
   let selectElement = document.querySelector('#label-option');
@@ -131,7 +138,7 @@ function mclickBase(d) {
   } else {
     let colorElement = document.querySelector('#color-option');
     d3.select(this)
-      .style('stroke-width', 0.5)
+      .style('stroke-width', strokeWidth)
       .style('fill', colorElement.value)
       .style('stroke', '#000')
       .on("mouseover", mover)
@@ -153,7 +160,7 @@ function mclick(d) {
   } else {
     let colorElement = document.querySelector('#color-option');
     d3.select(this)
-      .style('stroke-width', 0.5)
+      .style('stroke-width', strokeWidth)
       .style('fill', colorElement.value)
       .style('stroke', '#000')
       .on("mouseover", mover)
@@ -194,7 +201,7 @@ function dragged(event, d) {
 function dragended(event, d) {
   d.fixed = true
   d3.select(this)
-    .style('stroke-width', 0.5)
+    .style('stroke-width', strokeWidth)
     .style('stroke', '#000');
 }
 
