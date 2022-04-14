@@ -8,9 +8,14 @@ def main():
     plot('data/worldmap/cells.csv', 'data/worldmap/borders.csv')
 
 
+def test():
+    generate_borders('data/population/2018/cells.csv', 'data/test/borders.csv')
+
+
 def matrix():
     generate_matrix('data/worldmap/grid.asc', 'matrix.csv')
 
 
 if __name__ == "__main__":
+    test()
     print("Our World in Data")

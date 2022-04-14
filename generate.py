@@ -114,15 +114,15 @@ def generate_borders(cell_filename, border_filename):
     borders_df.to_csv(border_filename, index=False)
     borders_df.to_csv(border_filename, index=False)
     feature_collection = FeatureCollection(feature_list)
-    geo_path = 'geo.json'
+    geo_path = 'data/test/geo.json'
 
     with open(geo_path, 'w', encoding='utf8') as geojson_file:
         dump(feature_collection, geojson_file)
 
-    projected_geo_path = 'projected_geo.json'
-    topo_path = 'topo.json'
+    projected_geo_path = 'data/test/projected_geo.json'
+    topo_path = 'data/test/topo.json'
     os.system(
-        "npx geoproject 'd3.geoEquirectangular().fitSize([1000, 500], d)' < " + geo_path + " > " + projected_geo_path)
+        "npx geoproject 'd3.geoNaturalEarth1().fitSize([1000, 500], d)' < " + geo_path + " > " + projected_geo_path)
     os.system("npx geo2topo tiles=" + projected_geo_path + " \
             | npx toposimplify -p 0.0005 \
             | npx topoquantize 1e9 > " + topo_path)
