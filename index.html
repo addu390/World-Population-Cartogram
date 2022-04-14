@@ -10,11 +10,56 @@
   <script src="https://unpkg.com/d3"></script>
   <style>
     .content {
+      margin-top: 15px;
       position: absolute;
       left: 50%;
       top: 50%;
       -webkit-transform: translate(-50%, -50%);
       transform: translate(-50%, -50%);
+    }
+
+    .loader-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+    }
+
+    .loader {
+      z-index: 3;
+      border: 6px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 6px solid #3498db;
+      width: 60px;
+      height: 60px;
+      -webkit-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;
+    }
+
+    @-webkit-keyframes spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+      }
+
+      100% {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .hide {
+      display: none !important;
     }
 
     .right {
@@ -25,6 +70,11 @@
 
 <body>
   <div class="content">
+
+    <div class="loader-container" id="loader">
+      <div class="loader"></div>
+    </div>
+
     Hexagon Radius &nbsp;<input type="range" id="radius" name="radius" min="2" max="12" style="width: 20%" value="6"
       step="1" oninput="amount.value=radius.value" />
     <output id="amount" name="amount" for="radius">6</output>
@@ -61,6 +111,7 @@
     <span class="right">Drag and Drop cell | Double click on the cell to Add/Remove: &nbsp; </span>
 
     <div id="container"></div>
+
     <script src="app.js" type="module"></script>
   </div>
   <br>

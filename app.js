@@ -1,17 +1,18 @@
 import { hexbin } from 'd3-hexbin'
 
+document.querySelector('#loader').classList.add("hide");
 let colors = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50',
   '#f1c40f', '#e67e22', '#e74c3c', '#ecf0f1', '#95a5a6', '#f39c12', '#d35400', '#c0392b', '#bdc3c7', '#7f8c8d']
 
 let radiusInput = document.querySelector('input#radius');
 
 radiusInput.addEventListener('click', () => {
+  document.querySelector('#loader').classList.remove("hide");
   console.log(radiusInput.value)
   start()
 });
 
-
-const margin = { top: 30, right: 30, bottom: 30, left: 30 },
+const margin = { top: 25, right: 10, bottom: 35, left: 10 },
   width = 1250 - margin.left - margin.right,
   height = 750 - margin.top - margin.bottom;
 
@@ -24,6 +25,7 @@ function start() {
     let [geoData] = res;
 
     plot_map(geoData, hexRadius);
+    document.querySelector('#loader').classList.add("hide");
   });
 }
 
@@ -31,11 +33,8 @@ function plot_map(geo, hexRadius) {
 
   let hexDistance = hexRadius * 1.5
   let cols = width / hexDistance
-
   let new_projection = d3.geoNaturalEarth1().fitExtent([[0, height * 0.05], [width, height * 0.95]], geo)
-
   let rows = Math.ceil(height / hexDistance);
-
   let pointGrid = d3.range(rows * cols).map(function (el, i) {
     return {
       x: Math.floor(i % cols) * hexDistance,
@@ -45,7 +44,6 @@ function plot_map(geo, hexRadius) {
   });
 
   let features = []
-
   for (let i = 0; i < geo.features.length; i++) {
     features[i] = []
     if (geo.features[i].geometry.type == "MultiPolygon") {
@@ -53,7 +51,6 @@ function plot_map(geo, hexRadius) {
         features[i] = features[i].concat(geo.features[i].geometry.coordinates[j][0])
       }
     }
-
     else if (geo.features[i].geometry.type == "Polygon") {
       features[i] = features[i].concat(geo.features[i].geometry.coordinates[0])
     }
@@ -82,12 +79,11 @@ function plot_map(geo, hexRadius) {
     .attr('d', new_hexbin.hexagon())
     .style('fill', '#fff')
     .style('stroke', '#e0e0e0')
-    .style('stroke-width', 1)
+    .style('stroke-width', 0.5)
     .on("click", mclickBase);
 
   for (let i = 0; i < features.length; i++) {
     let polygonPoints = features[i].map(el => new_projection(el));
-
     let usPoints = pointGrid.reduce(function (arr, el) {
       if (d3.polygonContains(polygonPoints, [el.x, el.y])) arr.push(el);
       return arr;
@@ -106,7 +102,7 @@ function plot_map(geo, hexRadius) {
       .attr('d', new_hexbin.hexagon())
       .style('fill', colors[i % 19])
       .style('stroke', '#000')
-      .style('stroke-width', 1)
+      .style('stroke-width', 0.5)
       .on("click", mclick)
       .on("mouseover", mover)
       .on("mouseout", mout)
@@ -135,7 +131,7 @@ function mclickBase(d) {
   } else {
     let colorElement = document.querySelector('#color-option');
     d3.select(this)
-      .style('stroke-width', 1)
+      .style('stroke-width', 0.5)
       .style('fill', colorElement.value)
       .style('stroke', '#000')
       .on("mouseover", mover)
@@ -157,7 +153,7 @@ function mclick(d) {
   } else {
     let colorElement = document.querySelector('#color-option');
     d3.select(this)
-      .style('stroke-width', 1)
+      .style('stroke-width', 0.5)
       .style('fill', colorElement.value)
       .style('stroke', '#000')
       .on("mouseover", mover)
@@ -179,7 +175,9 @@ function mout(d) {
 
 function dragstarted(event, d) {
   d.fixed = false
-  d3.select(this).raise();
+  d3.select(this).raise()
+    .style('stroke-width', 1)
+    .style('stroke', '#000');
 }
 
 function dragged(event, d) {
@@ -195,18 +193,18 @@ function dragged(event, d) {
 
 function dragended(event, d) {
   d.fixed = true
+  d3.select(this)
+    .style('stroke-width', 0.5)
+    .style('stroke', '#000');
 }
 
 function round(x, y, n) {
   var gridx
   var gridy
-
   var factor = Math.sqrt(3) / 2
-
   var d = n * 2
   var sx = d * factor
   var sy = n * 3
-
   if (y % sy < n) {
     gridy = y - (y % sy)
     gridx = x - (x % sx)
@@ -214,7 +212,6 @@ function round(x, y, n) {
     gridy = y + (d - (n * factor) / 2) - (y % sy);
     gridx = x + (n * factor) - (x % sx);
   }
-
   return [gridx, gridy]
 }
 
