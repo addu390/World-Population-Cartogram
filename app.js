@@ -1,4 +1,5 @@
 import { hexbin } from 'd3-hexbin'
+import * as topojson from "topojson-client";
 
 document.querySelector('#loader').classList.add("hide");
 let colors = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50',
@@ -8,8 +9,7 @@ let radiusInput = document.querySelector('input#radius');
 
 radiusInput.addEventListener('click', () => {
   document.querySelector('#loader').classList.remove("hide");
-  console.log(radiusInput.value)
-  start()
+  startGeo()
 });
 
 const margin = { top: 25, right: 10, bottom: 35, left: 10 };
@@ -17,7 +17,22 @@ const width = 1250 - margin.left - margin.right;
 const height = 750 - margin.top - margin.bottom;
 const strokeWidth = 0.5
 
-function start() {
+function startTopo() {
+  let hexRadius = radiusInput.value
+  const topoData = d3.json(
+    'https://raw.githubusercontent.com/addu390/population-cartogram/master/data/test/topo.json'
+  );
+  Promise.all([topoData]).then(res => {
+    let [topoData] = res;
+
+    var geoData = topojson.feature(topoData, topoData.objects.tiles)
+
+    plot_map(geoData, hexRadius, true);
+    document.querySelector('#loader').classList.add("hide");
+  });
+}
+
+function startGeo() {
   let hexRadius = radiusInput.value
   const geoData = d3.json(
     'https://raw.githubusercontent.com/addu390/population-cartogram/master/data/population/2018/geo.json'
@@ -25,13 +40,12 @@ function start() {
   Promise.all([geoData]).then(res => {
     let [geoData] = res;
 
-    plot_map(geoData, hexRadius);
+    plot_map(geoData, hexRadius, false);
     document.querySelector('#loader').classList.add("hide");
   });
 }
 
-function plot_map(geo, hexRadius) {
-
+function plot_map(geo, hexRadius, isProjected) {
   let hexDistance = hexRadius * 1.5
   let cols = width / hexDistance
   let newProjection = d3.geoNaturalEarth1().fitExtent([[0, height * 0.05], [width, height * 0.95]], geo)
@@ -88,7 +102,13 @@ function plot_map(geo, hexRadius) {
     .on("click", mclickBase);
 
   for (let i = 0; i < features.length; i++) {
-    let polygonPoints = features[i].coordinates.map(el => newProjection(el));
+    var polygonPoints;
+    if (isProjected) {
+      polygonPoints = features[i].coordinates;
+    } else {
+      polygonPoints = features[i].coordinates.map(el => newProjection(el));
+    }
+
     let usPoints = pointGrid.reduce(function (arr, el) {
       if (d3.polygonContains(polygonPoints, [el.x, el.y])) arr.push(el);
       return arr;
@@ -154,7 +174,6 @@ function mclickBase(d) {
 function mclick(d) {
   let selectElement = document.querySelector('#label-option');
   if (selectElement.value == "Remove") {
-    console.log("here")
     d3.select(this)
       .remove()
   } else {
@@ -222,4 +241,4 @@ function round(x, y, n) {
   return [gridx, gridy]
 }
 
-start()
+startGeo()
