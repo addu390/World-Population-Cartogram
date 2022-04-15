@@ -1,5 +1,6 @@
 import { hexbin } from 'd3-hexbin'
 import * as topojson from "topojson-client";
+import * as topogram from "topogram";
 
 document.querySelector('#loader').classList.add("hide");
 let colors = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50',
@@ -9,7 +10,7 @@ let radiusInput = document.querySelector('input#radius');
 
 radiusInput.addEventListener('click', () => {
   document.querySelector('#loader').classList.remove("hide");
-  startGeo()
+  startTopo()
 });
 
 const margin = { top: 25, right: 10, bottom: 35, left: 10 };
@@ -27,7 +28,7 @@ function startTopo() {
 
     var geoData = topojson.feature(topoData, topoData.objects.tiles)
 
-    plot_map(geoData, hexRadius, true);
+    plot_map(geoData, topoData, hexRadius, true);
     document.querySelector('#loader').classList.add("hide");
   });
 }
@@ -40,12 +41,12 @@ function startGeo() {
   Promise.all([geoData]).then(res => {
     let [geoData] = res;
 
-    plot_map(geoData, hexRadius, false);
+    plot_map(geoData, "", hexRadius, false);
     document.querySelector('#loader').classList.add("hide");
   });
 }
 
-function plot_map(geo, hexRadius, isProjected) {
+function plot_map(geo, topo, hexRadius, isProjected) {
   let hexDistance = hexRadius * 1.5
   let cols = width / hexDistance
   let newProjection = d3.geoNaturalEarth1().fitExtent([[0, height * 0.05], [width, height * 0.95]], geo)
@@ -58,22 +59,50 @@ function plot_map(geo, hexRadius, isProjected) {
     };
   });
 
+  console.log(hexRadius)
+  var cartogram = topogram.cartogram()
+  .properties(function(d) {
+    return d.properties;
+  })
+  .value(function (d) {
+    return Math.random() * 100;
+  });
+  
+  var topoFeatures = cartogram.features(topo, topo.objects.tiles.geometries);
+
   let features = []
-  for (let i = 0; i < geo.features.length; i++) {
+  for (let i = 0; i < topoFeatures.length; i++) {
+    console.log(topoFeatures[i])
     var tempFeatures = []
-    if (geo.features[i].geometry.type == "MultiPolygon") {
-      for (let j = 0; j < geo.features[i].geometry.coordinates.length; j++) {
-        tempFeatures = tempFeatures.concat(geo.features[i].geometry.coordinates[j][0])
+    if (topoFeatures[i].geometry.type == "MultiPolygon") {
+      for (let j = 0; j < topoFeatures[i].geometry.coordinates.length; j++) {
+        tempFeatures = tempFeatures.concat(topoFeatures[i].geometry.coordinates[j][0])
       }
     }
-    else if (geo.features[i].geometry.type == "Polygon") {
-      tempFeatures = tempFeatures.concat(geo.features[i].geometry.coordinates[0])
+    else if (topoFeatures[i].geometry.type == "Polygon") {
+      tempFeatures = tempFeatures.concat(topoFeatures[i].geometry.coordinates[0])
     }
     features[i] = {
       "coordinates": tempFeatures,
-      "properties": geo.features[i].properties
+      "properties": topoFeatures[i].properties
     }
   }
+  console.log(features)
+  // for (let i = 0; i < geo.features.length; i++) {
+  //   var tempFeatures = []
+  //   if (geo.features[i].geometry.type == "MultiPolygon") {
+  //     for (let j = 0; j < geo.features[i].geometry.coordinates.length; j++) {
+  //       tempFeatures = tempFeatures.concat(geo.features[i].geometry.coordinates[j][0])
+  //     }
+  //   }
+  //   else if (geo.features[i].geometry.type == "Polygon") {
+  //     tempFeatures = tempFeatures.concat(geo.features[i].geometry.coordinates[0])
+  //   }
+  //   features[i] = {
+  //     "coordinates": tempFeatures,
+  //     "properties": geo.features[i].properties
+  //   }
+  // }
 
   d3.select('#container').selectAll("*").remove()
 
@@ -242,4 +271,4 @@ function round(x, y, n) {
   return [gridx, gridy]
 }
 
-startGeo()
+startTopo()
