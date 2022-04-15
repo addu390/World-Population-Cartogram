@@ -154,6 +154,7 @@ function mclickBase(d) {
     d3.select(this)
       .style('fill', '#fff')
       .style('stroke', '#e0e0e0')
+      .style('stroke-width', strokeWidth)
       .lower();
   } else {
     let colorElement = document.querySelector('#color-option');
