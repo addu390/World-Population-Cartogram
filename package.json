@@ -21,6 +21,7 @@
     "d3-geo-projection": "^4.0.0",
     "d3-hexbin": "^0.2.2",
     "d3-hexgrid": "^0.3.0",
+    "topogram": "^1.0.1",
     "topojson-client": "^3.1.0",
     "topojson-server": "^3.0.1",
     "topojson-simplify": "^3.0.3"
