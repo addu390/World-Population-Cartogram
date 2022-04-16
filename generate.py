@@ -156,9 +156,9 @@ def generate_borders(cell_filename, border_filename):
     projected_geo_path = 'data/test2/projected_geo.json'
     topo_path = 'data/test2/topo.json'
     os.system(
-        "npx geoproject 'd3.geoNaturalEarth1().fitSize([1000, 500], d)' < " + geo_path + " > " + projected_geo_path)
+        "npx geoproject 'd3.geoNaturalEarth1().fitSize([1250, 750], d)' < " + geo_path + " > " + projected_geo_path)
     os.system("npx geo2topo tiles=" + projected_geo_path + " \
-            | npx toposimplify -p 0.0005 \
+            | npx toposimplify -p 0.00005 \
             | npx topoquantize 1e9 > " + topo_path)
 
 
