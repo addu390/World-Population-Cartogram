@@ -8,6 +8,23 @@ import pandas as pd
 from geojson import Feature, Polygon, MultiPolygon, FeatureCollection, dump
 
 
+def generate_pop():
+    cells_df = pd.read_csv("data/world-population-unpd.csv")
+    df = pd.DataFrame(cells_df)
+
+    pd.to_numeric(df["future-population"])
+    df["future-population"] = df["future-population"].fillna(0)
+
+    pd.to_numeric(df["current-population"])
+    df["current-population"] = df["current-population"].fillna(0)
+
+    df["population"] = df["future-population"] + df["current-population"]
+    df["population"] = df["population"].astype('int')
+
+    df = df.set_index(['name', 'code', 'year'])['population'].unstack()
+    df.to_csv('test.csv')
+
+
 def generate_matrix(grid_filename, matrix_filename):
     with open(grid_filename, 'r') as f:
         input_array = [[int(float(num)) for num in line.split()] for line in f]
