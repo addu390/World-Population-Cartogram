@@ -1,5 +1,6 @@
 import { hexbin } from 'd3-hexbin'
 import * as topogram from "topogram";
+import { scaleLinear } from 'd3-scale'
 
 document.querySelector('#loader').classList.add("hide");
 let colors = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50',
@@ -28,13 +29,13 @@ const width = 1250 - margin.left - margin.right;
 const height = 750 - margin.top - margin.bottom;
 const strokeWidth = 0.5
 
-const topoData = d3.json('https://raw.githubusercontent.com/addu390/population-cartogram/master/data/test2/topo.json');
-const popData = d3.csv('https://raw.githubusercontent.com/addu390/population-cartogram/master/data/world-population-unpd-3.csv');
-
 function start() {
   let hexRadius = radiusInput.value
+  const topoData = d3.json('https://raw.githubusercontent.com/addu390/population-cartogram/master/data/test2/topo.json');
+  const popData = d3.csv('https://raw.githubusercontent.com/addu390/population-cartogram/master/data/world-population-unpd-3.csv');
   Promise.all([topoData, popData]).then(res => {
     let [topoData, popData] = res;
+
     plot_map(topoData, popData, hexRadius, true);
     document.querySelector('#loader').classList.add("hide");
   });
