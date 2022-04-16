@@ -160,8 +160,6 @@ function plot_map(topo, pop, hexRadius, isProjected) {
 }
 
 function mover(d) {
-  klass = d3.select(this).attr("class")
-  d3.selectAll("." + klass);
   d3.select(this)
     .transition()
     .duration(10)
