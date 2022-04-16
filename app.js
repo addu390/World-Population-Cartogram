@@ -11,7 +11,7 @@ let radiusInput = document.querySelector('input#radius');
 
 radiusInput.addEventListener('click', () => {
   document.querySelector('#loader').classList.remove("hide");
-  startTopo()
+  start()
 });
 
 const margin = { top: 25, right: 10, bottom: 35, left: 10 };
@@ -19,7 +19,7 @@ const width = 1250 - margin.left - margin.right;
 const height = 750 - margin.top - margin.bottom;
 const strokeWidth = 0.5
 
-function startTopo() {
+function start() {
   let hexRadius = radiusInput.value
   const topoData = d3.json(
     'https://raw.githubusercontent.com/addu390/population-cartogram/master/data/test/topo.json'
@@ -27,30 +27,15 @@ function startTopo() {
   Promise.all([topoData]).then(res => {
     let [topoData] = res;
 
-    var geoData = topojson.feature(topoData, topoData.objects.tiles)
-
-    plot_map(geoData, topoData, hexRadius, true);
+    plot_map(topoData, hexRadius, true);
     document.querySelector('#loader').classList.add("hide");
   });
 }
 
-function startGeo() {
-  let hexRadius = radiusInput.value
-  const geoData = d3.json(
-    'https://raw.githubusercontent.com/addu390/population-cartogram/master/data/population/2018/geo.json'
-  );
-  Promise.all([geoData]).then(res => {
-    let [geoData] = res;
-
-    plot_map(geoData, "", hexRadius, false);
-    document.querySelector('#loader').classList.add("hide");
-  });
-}
-
-function plot_map(geo, topo, hexRadius, isProjected) {
+function plot_map(topo, hexRadius, isProjected) {
   let hexDistance = hexRadius * 1.5
   let cols = width / hexDistance
-  let newProjection = d3.geoNaturalEarth1().fitExtent([[0, height * 0.05], [width, height * 0.95]], geo)
+  // let newProjection = d3.geoNaturalEarth1().fitExtent([[0, height * 0.05], [width, height * 0.95]], geo)
   let rows = Math.ceil(height / hexDistance);
   let pointGrid = d3.range(rows * cols).map(function (el, i) {
     return {
@@ -72,14 +57,8 @@ function plot_map(geo, topo, hexRadius, isProjected) {
     }
     return 1000
   });
-
-  function getRandomArbitrary(min, max) {
-    return Math.random() * (max - min) + min;
-  }
   
-  //var oldTopoFeatures = cartogram.features(topo, topo.objects.tiles.geometries);
   var topoFeatures = cartogram(topo, topo.objects.tiles.geometries).features
-  console.log(topoFeatures)
 
   let features = []
   for (let i = 0; i < topoFeatures.length; i++) {
@@ -97,21 +76,6 @@ function plot_map(geo, topo, hexRadius, isProjected) {
       "properties": topoFeatures[i].properties
     }
   }
-  // for (let i = 0; i < geo.features.length; i++) {
-  //   var tempFeatures = []
-  //   if (geo.features[i].geometry.type == "MultiPolygon") {
-  //     for (let j = 0; j < geo.features[i].geometry.coordinates.length; j++) {
-  //       tempFeatures = tempFeatures.concat(geo.features[i].geometry.coordinates[j][0])
-  //     }
-  //   }
-  //   else if (geo.features[i].geometry.type == "Polygon") {
-  //     tempFeatures = tempFeatures.concat(geo.features[i].geometry.coordinates[0])
-  //   }
-  //   features[i] = {
-  //     "coordinates": tempFeatures,
-  //     "properties": geo.features[i].properties
-  //   }
-  // }
 
   d3.select('#container').selectAll("*").remove()
 
@@ -280,4 +244,4 @@ function round(x, y, n) {
   return [gridx, gridy]
 }
 
-startTopo()
+start()
