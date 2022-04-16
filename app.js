@@ -22,7 +22,7 @@ const strokeWidth = 0.5
 function start() {
   let hexRadius = radiusInput.value
   const topoData = d3.json(
-    'https://raw.githubusercontent.com/addu390/population-cartogram/master/data/test/topo.json'
+    'https://raw.githubusercontent.com/addu390/population-cartogram/master/data/test2/topo.json'
   );
   Promise.all([topoData]).then(res => {
     let [topoData] = res;
@@ -49,17 +49,21 @@ function plot_map(topo, hexRadius, isProjected) {
     .properties(function (d) {
       return d.properties;
     })
+    .value(function (d) {
+      var currentValue = d.properties.count
+      return +currentValue
+    });
 
-  var scale = scaleLinear()
-    .domain([0, 170000])
-    .range([1, 100]);
+  cartogram.features(topo, topo.objects.tiles.geometries)
+
+  var scale = d3.scaleLinear()
+    .domain([1000, 1000000000])
+    .range([1, 1000]);
 
   cartogram.value(function (d) {
-    if (d.properties.id == "356--31") {
-      console.log("India")
-      return 10000
-    }
-    return + scale(100)
+    console.log(d.properties.count, d.properties.id)
+    var currentValue = d.properties.expected
+    return +scale(currentValue)
   });
 
   var topoFeatures = cartogram(topo, topo.objects.tiles.geometries).features
