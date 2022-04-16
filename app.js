@@ -35,7 +35,6 @@ function start() {
 function plot_map(topo, hexRadius, isProjected) {
   let hexDistance = hexRadius * 1.5
   let cols = width / hexDistance
-  // let newProjection = d3.geoNaturalEarth1().fitExtent([[0, height * 0.05], [width, height * 0.95]], geo)
   let rows = Math.ceil(height / hexDistance);
   let pointGrid = d3.range(rows * cols).map(function (el, i) {
     return {
@@ -46,18 +45,23 @@ function plot_map(topo, hexRadius, isProjected) {
   });
 
   var cartogram = topogram.cartogram()
-  .projection(null)
-  .properties(function(d) {
-    return d.properties;
-  })
-  cartogram.value(function(d) {
+    .projection(null)
+    .properties(function (d) {
+      return d.properties;
+    })
+
+  var scale = scaleLinear()
+    .domain([0, 170000])
+    .range([1, 100]);
+
+  cartogram.value(function (d) {
     if (d.properties.id == "356--31") {
       console.log("India")
-      return 10000000
+      return 10000
     }
-    return 1000
+    return + scale(100)
   });
-  
+
   var topoFeatures = cartogram(topo, topo.objects.tiles.geometries).features
 
   let features = []
