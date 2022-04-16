@@ -7,16 +7,19 @@ let colors = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#16a085', 
   '#f1c40f', '#e67e22', '#e74c3c', '#ecf0f1', '#95a5a6', '#f39c12', '#d35400', '#c0392b', '#bdc3c7', '#7f8c8d']
 
 let radiusInput = document.querySelector('input#radius');
+let radiusButton = document.querySelector('input#select-radius');
+
 let yearButton = document.querySelector('input#select-year');
 let yearInput = document.querySelector('input#year');
 
-radiusInput.addEventListener('click', () => {
+radiusButton.addEventListener('click', () => {
+  radiusInput = document.querySelector('input#radius');
   document.querySelector('#loader').classList.remove("hide");
   start()
 });
 
 yearButton.addEventListener('click', () => {
-  yearButton = document.querySelector('input#year');
+  yearInput = document.querySelector('input#year');
   document.querySelector('#loader').classList.remove("hide");
   start()
 });
