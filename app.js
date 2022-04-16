@@ -21,18 +21,17 @@ const strokeWidth = 0.5
 
 function start() {
   let hexRadius = radiusInput.value
-  const topoData = d3.json(
-    'https://raw.githubusercontent.com/addu390/population-cartogram/master/data/test2/topo.json'
-  );
-  Promise.all([topoData]).then(res => {
-    let [topoData] = res;
+  const topoData = d3.json('https://raw.githubusercontent.com/addu390/population-cartogram/master/data/test2/topo.json');
+  const popData = d3.csv('https://raw.githubusercontent.com/addu390/population-cartogram/master/data/world-population-unpd-3.csv');
+  Promise.all([topoData, popData]).then(res => {
+    let [topoData, popData] = res;
 
-    plot_map(topoData, hexRadius, true);
+    plot_map(topoData, popData, hexRadius, true);
     document.querySelector('#loader').classList.add("hide");
   });
 }
 
-function plot_map(topo, hexRadius, isProjected) {
+function plot_map(topo, pop, hexRadius, isProjected) {
   let hexDistance = hexRadius * 1.5
   let cols = width / hexDistance
   let rows = Math.ceil(height / hexDistance);
@@ -43,6 +42,8 @@ function plot_map(topo, hexRadius, isProjected) {
       datapoint: 0
     };
   });
+
+  populationJson = getData(pop)
 
   var cartogram = topogram.cartogram()
     .projection(null)
@@ -57,12 +58,12 @@ function plot_map(topo, hexRadius, isProjected) {
   cartogram.features(topo, topo.objects.tiles.geometries)
 
   var scale = d3.scaleLinear()
-    .domain([1000, 1000000000])
+    .domain([1, 1000000000])
     .range([1, 1000]);
 
   cartogram.value(function (d) {
-    console.log(d.properties.count, d.properties.id)
-    var currentValue = d.properties.expected
+    var currentValue = populationJson[d.properties.id][1950]
+    console.log(currentValue)
     return +scale(currentValue)
   });
 
@@ -250,6 +251,14 @@ function round(x, y, n) {
     gridx = x + (n * factor) - (x % sx);
   }
   return [gridx, gridy]
+}
+
+function getData(data) {
+  var obj = {}
+  for (var x in data) {
+    obj[data[x].code] = data[x]
+  }
+  return obj
 }
 
 start()
