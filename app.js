@@ -1,6 +1,7 @@
 import { hexbin } from 'd3-hexbin'
 import * as topojson from "topojson-client";
 import * as topogram from "topogram";
+import { scaleLinear } from 'd3-scale'
 
 document.querySelector('#loader').classList.add("hide");
 let colors = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50',
@@ -59,20 +60,29 @@ function plot_map(geo, topo, hexRadius, isProjected) {
     };
   });
 
-  console.log(hexRadius)
   var cartogram = topogram.cartogram()
+  .projection(null)
   .properties(function(d) {
     return d.properties;
   })
-  .value(function (d) {
-    return Math.random() * 100;
+  cartogram.value(function(d) {
+    if (d.properties.id == "356--31") {
+      console.log("India")
+      return 10000000
+    }
+    return 1000
   });
+
+  function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+  }
   
-  var topoFeatures = cartogram.features(topo, topo.objects.tiles.geometries);
+  //var oldTopoFeatures = cartogram.features(topo, topo.objects.tiles.geometries);
+  var topoFeatures = cartogram(topo, topo.objects.tiles.geometries).features
+  console.log(topoFeatures)
 
   let features = []
   for (let i = 0; i < topoFeatures.length; i++) {
-    console.log(topoFeatures[i])
     var tempFeatures = []
     if (topoFeatures[i].geometry.type == "MultiPolygon") {
       for (let j = 0; j < topoFeatures[i].geometry.coordinates.length; j++) {
@@ -87,7 +97,6 @@ function plot_map(geo, topo, hexRadius, isProjected) {
       "properties": topoFeatures[i].properties
     }
   }
-  console.log(features)
   // for (let i = 0; i < geo.features.length; i++) {
   //   var tempFeatures = []
   //   if (geo.features[i].geometry.type == "MultiPolygon") {
