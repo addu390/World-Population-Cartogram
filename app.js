@@ -1,5 +1,4 @@
 import { hexbin } from 'd3-hexbin'
-import * as topojson from "topojson-client";
 import * as topogram from "topogram";
 import { scaleLinear } from 'd3-scale'
 
