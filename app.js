@@ -50,7 +50,7 @@ function plot_map(topo, pop, hexRadius, isProjected) {
     };
   });
 
-  populationJson = getData(pop)
+  var populationJson = getData(pop)
 
   var cartogram = topogram.cartogram()
     .projection(null)
