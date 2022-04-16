@@ -9,7 +9,7 @@ def main():
 
 
 def test():
-    generate_borders('data/population/2018/cells.csv', 'data/test/borders.csv')
+    generate_borders('data/population/2018/cells.csv', 'data/test2/borders.csv')
 
 
 def matrix():

@@ -8,6 +8,28 @@ import pandas as pd
 from geojson import Feature, Polygon, MultiPolygon, FeatureCollection, dump
 
 
+def generate_pop():
+    df_1 = pd.DataFrame(pd.read_csv("data/country-code.csv"))
+    df_2 = pd.DataFrame(pd.read_csv("data/world-population-unpd.csv"))
+
+    pd.to_numeric(df_2["future-population"])
+    df_2["future-population"] = df_2["future-population"].fillna(0)
+
+    pd.to_numeric(df_2["current-population"])
+    df_2["current-population"] = df_2["current-population"].fillna(0)
+
+    df_2["population"] = df_2["future-population"] + df_2["current-population"]
+    df_2["population"] = df_2["population"].astype('int')
+
+    df_2 = df_2.set_index(['name', 'code', 'year'])['population'].unstack()
+    df_2 = df_2.filter(["name", "code", 1950, 2018, 2019, 2020, 2030])
+
+    df_3 = pd.merge(df_2, df_1, on=['name', 'name'])
+    df_3 = df_3.filter(["name", "code", 1950, 2018, 2019, 2020, 2030])
+
+    df_3.to_csv('temp.csv')
+
+
 def generate_matrix(grid_filename, matrix_filename):
     with open(grid_filename, 'r') as f:
         input_array = [[int(float(num)) for num in line.split()] for line in f]
@@ -33,6 +55,7 @@ def generate_cells(grid_filename, cell_filename):
 
 
 def generate_borders(cell_filename, border_filename):
+    population_df = pd.read_csv('data/world-population-unpd-3.csv')
     cells_df = pd.read_csv(cell_filename)
     country_code_list = pd.unique(cells_df['CountryCode'])
 
@@ -44,6 +67,12 @@ def generate_borders(cell_filename, border_filename):
         country_cells_df = cells_df.loc[cells_df['CountryCode'] == countryCode]
         country_poly_df = country_cells_df.apply(create_polygon, axis=1)
         union_polygon = unary_union(country_poly_df.tolist())
+
+        current = 1000
+        expected = 1000
+        if not population_df.loc[population_df['code'] == countryCode].empty:
+            current = population_df.loc[population_df['code'] == countryCode].values[0][3]
+            expected = population_df.loc[population_df['code'] == countryCode].values[0][4]
 
         if union_polygon.geom_type == 'Polygon':
             union_polygon = orient(union_polygon, -1)
@@ -72,7 +101,11 @@ def generate_borders(cell_filename, border_filename):
 
             new_border_df = border_df
             new_polygon = Polygon(polygon_borders)
-            new_feature = Feature(geometry=new_polygon, properties={"id": str(countryCode) + '--' + str(polygon_id)})
+            new_feature = Feature(geometry=new_polygon,
+                                  properties={"id": str(countryCode),
+                                              "polygon-id": str(countryCode) + '-' + str(polygon_id),
+                                              "count": current,
+                                              "expected": expected})
 
         else:
             all_border_df = pd.DataFrame()
@@ -106,7 +139,11 @@ def generate_borders(cell_filename, border_filename):
 
             new_border_df = all_border_df
             multi_polygon = MultiPolygon(multi_polygons)
-            new_feature = Feature(geometry=multi_polygon, properties={"id": str(countryCode) + '--' + str(polygon_id)})
+            new_feature = Feature(geometry=multi_polygon,
+                                  properties={"id": str(countryCode),
+                                              "polygon-id": str(countryCode) + '-' + str(polygon_id),
+                                              "count": current,
+                                              "expected": expected})
 
         borders_df = pd.concat([borders_df, new_border_df])
         feature_list.append(new_feature)
@@ -114,13 +151,13 @@ def generate_borders(cell_filename, border_filename):
     borders_df.to_csv(border_filename, index=False)
     borders_df.to_csv(border_filename, index=False)
     feature_collection = FeatureCollection(feature_list)
-    geo_path = 'data/test/geo.json'
+    geo_path = 'data/test2/geo.json'
 
     with open(geo_path, 'w', encoding='utf8') as geojson_file:
         dump(feature_collection, geojson_file)
 
-    projected_geo_path = 'data/test/projected_geo.json'
-    topo_path = 'data/test/topo.json'
+    projected_geo_path = 'data/test2/projected_geo.json'
+    topo_path = 'data/test2/topo.json'
     os.system(
         "npx geoproject 'd3.geoNaturalEarth1().fitSize([1000, 500], d)' < " + geo_path + " > " + projected_geo_path)
     os.system("npx geo2topo tiles=" + projected_geo_path + " \
@@ -138,3 +175,7 @@ def create_polygon(row):
 def df_to_tuple(border_df):
     border = tuple((zip(border_df.X / 1000, border_df.Y / 1000)))
     return border
+
+
+if __name__ == "__main__":
+    print("Our World in Data - Generator")
