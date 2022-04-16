@@ -68,11 +68,10 @@ def generate_borders(cell_filename, border_filename):
         country_poly_df = country_cells_df.apply(create_polygon, axis=1)
         union_polygon = unary_union(country_poly_df.tolist())
 
-        current = 1000
-        expected = 1000
         if not population_df.loc[population_df['code'] == countryCode].empty:
-            current = population_df.loc[population_df['code'] == countryCode].values[0][3]
-            expected = population_df.loc[population_df['code'] == countryCode].values[0][4]
+            current = population_df.loc[population_df['code'] == countryCode].values[0][4]
+        else:
+            print(countryCode)
 
         if union_polygon.geom_type == 'Polygon':
             union_polygon = orient(union_polygon, -1)
@@ -104,8 +103,7 @@ def generate_borders(cell_filename, border_filename):
             new_feature = Feature(geometry=new_polygon,
                                   properties={"id": str(countryCode),
                                               "polygon-id": str(countryCode) + '-' + str(polygon_id),
-                                              "count": current,
-                                              "expected": expected})
+                                              "count": current})
 
         else:
             all_border_df = pd.DataFrame()
@@ -142,8 +140,7 @@ def generate_borders(cell_filename, border_filename):
             new_feature = Feature(geometry=multi_polygon,
                                   properties={"id": str(countryCode),
                                               "polygon-id": str(countryCode) + '-' + str(polygon_id),
-                                              "count": current,
-                                              "expected": expected})
+                                              "count": current})
 
         borders_df = pd.concat([borders_df, new_border_df])
         feature_list.append(new_feature)
@@ -178,4 +175,5 @@ def df_to_tuple(border_df):
 
 
 if __name__ == "__main__":
+    generate_pop()
     print("Our World in Data - Generator")
