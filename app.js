@@ -83,11 +83,11 @@ function plot_map(topo, pop, hexRadius, isProjected) {
     var tempFeatures = []
     if (topoFeatures[i].geometry.type == "MultiPolygon") {
       for (let j = 0; j < topoFeatures[i].geometry.coordinates.length; j++) {
-        tempFeatures = tempFeatures.concat(topoFeatures[i].geometry.coordinates[j][0])
+        tempFeatures[j] = topoFeatures[i].geometry.coordinates[j][0]
       }
     }
     else if (topoFeatures[i].geometry.type == "Polygon") {
-      tempFeatures = tempFeatures.concat(topoFeatures[i].geometry.coordinates[0])
+      tempFeatures[0] = topoFeatures[i].geometry.coordinates[0]
     }
     features[i] = {
       "coordinates": tempFeatures,
@@ -122,40 +122,37 @@ function plot_map(topo, pop, hexRadius, isProjected) {
     .on("click", mclickBase);
 
   for (let i = 0; i < features.length; i++) {
-    var polygonPoints;
-    if (isProjected) {
-      polygonPoints = features[i].coordinates;
-    } else {
-      polygonPoints = features[i].coordinates.map(el => newProjection(el));
+    for (let j = 0; j < features[i].coordinates.length; j++) {
+      var polygonPoints = features[i].coordinates[j];
+
+      let usPoints = pointGrid.reduce(function (arr, el) {
+        if (d3.polygonContains(polygonPoints, [el.x, el.y])) arr.push(el);
+        return arr;
+      }, [])
+
+      let hexPoints = newHexbin(usPoints)
+
+      svg.append('g')
+        .attr('id', 'hexes')
+        .selectAll('.hex')
+        .data(hexPoints)
+        .enter().append('path')
+        .attr('class', 'hex' + features[i].properties.id)
+        .attr('transform', function (d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
+        .attr("x", function (d) { return d.x; })
+        .attr("y", function (d) { return d.y; })
+        .attr('d', newHexbin.hexagon())
+        .style('fill', colors[i % 19])
+        .style('stroke', '#000')
+        .style('stroke-width', strokeWidth)
+        .on("click", mclick)
+        .on("mouseover", mover)
+        .on("mouseout", mout)
+        .call(d3.drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended));
     }
-
-    let usPoints = pointGrid.reduce(function (arr, el) {
-      if (d3.polygonContains(polygonPoints, [el.x, el.y])) arr.push(el);
-      return arr;
-    }, [])
-
-    let hexPoints = newHexbin(usPoints)
-
-    svg.append('g')
-      .attr('id', 'hexes')
-      .selectAll('.hex')
-      .data(hexPoints)
-      .enter().append('path')
-      .attr('class', 'hex' + features[i].properties.id)
-      .attr('transform', function (d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
-      .attr("x", function (d) { return d.x; })
-      .attr("y", function (d) { return d.y; })
-      .attr('d', newHexbin.hexagon())
-      .style('fill', colors[i % 19])
-      .style('stroke', '#000')
-      .style('stroke-width', strokeWidth)
-      .on("click", mclick)
-      .on("mouseover", mover)
-      .on("mouseout", mout)
-      .call(d3.drag()
-        .on("start", dragstarted)
-        .on("drag", dragged)
-        .on("end", dragended));
   }
 }
 
