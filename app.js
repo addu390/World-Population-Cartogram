@@ -1,6 +1,5 @@
 import { hexbin } from 'd3-hexbin'
 import * as topogram from "topogram";
-import { scaleLinear } from 'd3-scale'
 
 document.querySelector('#loader').classList.add("hide");
 let colors = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50',
@@ -27,7 +26,6 @@ yearButton.addEventListener('click', () => {
 });
 
 downloadButton.addEventListener('mouseover', () => {
-  console.log("test")
   d3.select("#download").on("click", function () {
     d3.select(this)
       .attr("href", 'data:application/octet-stream;base64,' + btoa(d3.select("#container").html()))
@@ -77,10 +75,6 @@ function plot_map(topo, pop, hexRadius, isProjected) {
     });
 
   cartogram.features(topo, topo.objects.tiles.geometries)
-
-  var scale = d3.scaleLinear()
-    .domain([1, 1000000000])
-    .range([1, 1000]);
 
   cartogram.value(function (d) {
     var currentValue = populationJson[d.properties.id][yearInput.value]
