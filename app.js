@@ -42,8 +42,8 @@ const strokeWidth = 0.5
 
 function start() {
   let hexRadius = radiusInput.value
-  const topoData = d3.json('https://raw.githubusercontent.com/addu390/population-cartogram/master/data/test2/topo.json');
-  const popData = d3.csv('https://raw.githubusercontent.com/addu390/population-cartogram/master/data/world-population-unpd-3.csv');
+  const topoData = d3.json('https://raw.githubusercontent.com/addu390/population-cartogram/master/data/population/2018/v2/topo.json');
+  const popData = d3.csv('https://raw.githubusercontent.com/addu390/population-cartogram/master/data/world-population-unpd-flat.csv');
   Promise.all([topoData, popData]).then(res => {
     let [topoData, popData] = res;
 
