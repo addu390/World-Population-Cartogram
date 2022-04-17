@@ -9,6 +9,8 @@ let colors = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#16a085', 
 let radiusInput = document.querySelector('input#radius');
 let radiusButton = document.querySelector('input#select-radius');
 
+let downloadButton = document.querySelector('#download');
+
 let yearInput = document.querySelector('input#year');
 let yearButton = document.querySelector('input#select-year');
 
@@ -22,6 +24,15 @@ yearButton.addEventListener('click', () => {
   yearInput = document.querySelector('input#year');
   document.querySelector('#loader').classList.remove("hide");
   start()
+});
+
+downloadButton.addEventListener('mouseover', () => {
+  console.log("test")
+  d3.select("#download").on("click", function () {
+    d3.select(this)
+      .attr("href", 'data:application/octet-stream;base64,' + btoa(d3.select("#container").html()))
+      .attr("download", "cartogram.svg")
+  })
 });
 
 const margin = { top: 15, right: 10, bottom: 15, left: 10 };
