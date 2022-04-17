@@ -24,7 +24,7 @@ yearButton.addEventListener('click', () => {
   start()
 });
 
-const margin = { top: 25, right: 10, bottom: 35, left: 10 };
+const margin = { top: 15, right: 10, bottom: 15, left: 10 };
 const width = 1250 - margin.left - margin.right;
 const height = 750 - margin.top - margin.bottom;
 const strokeWidth = 0.5
