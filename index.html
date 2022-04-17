@@ -43,7 +43,7 @@
 
     #download {
       text-decoration: none;
-      color: black;
+      color: #fff;
     }
 
     .loader,
@@ -106,7 +106,7 @@
 </head>
 
 <body>
-  <div class="content">
+  <div class="content container-fluid text-center" style="margin-left: 25px;">
 
     <div id="page-loader" class="center"></div>
 
@@ -114,17 +114,21 @@
       <div class="loader"></div>
     </div>
 
-    <input class="left height-30" type="number" id="radius" name="radius" min="1" max="12" value="5" />
-    <input type="button" value="Select Radius" class="left height-30" id="select-radius"></input>
+    <input class="left form-control form-control-sm" style="width: 50px; margin-left: 35px;" type="number" id="radius"
+      name="radius" min="1" max="12" value="5" />
+    <input type="button" value="Select Radius" class="left btn btn-sm btn-success" id="select-radius"></input>
 
     <span class="left">&nbsp;&nbsp; </span>
 
-    <input class="left height-30" type="number" id="year" name="year" min="1950" max="2100" value="2022" />
-    <input type="button" value="Select Year" class="left height-30" id="select-year"></input>
+    <input class="left form-control form-control-sm" style="width: 80px;" type="number" id="year" name="year" min="1950"
+      max="2100" value="2022" />
+    <input type="button" value="Select Year" class="left btn btn-sm btn-success" id="select-year"></input>
 
-    &nbsp; <button><a id="download" href="#">Download SVG</button>
+    <button class="btn btn-sm btn-secondary left" style="margin-left: 10px;"><a id="download" href="#">Download
+        SVG</button>
 
-    <input type="color" list="presetColors" id="color-option" value="#8e44ad" class="right height-30">
+    <input type="color" list="presetColors" id="color-option" value="#8e44ad" class="right form-control form-control-sm"
+      style="width: 100px; height: 2.2em; margin-right: 35px;">
     <datalist id="presetColors">
       <option>#1abc9c</option>
       <option>#2ecc71</option>
@@ -148,12 +152,12 @@
       <option>#7f8c8d</option>
     </datalist>
 
-    <select id="label-option" class="right height-30">
+    <select id="label-option" class="right form-control form-control-sm" style="width: 100px;">
       <option>Add</option>
       <option>Remove</option>
     </select>
 
-    <span class="right">Add/Remove: &nbsp; </span>
+    <span class="right">Add/Remove cells: &nbsp; </span>
 
     <div id="container"></div>
 
