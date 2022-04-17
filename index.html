@@ -14,9 +14,13 @@
       bottom: 0;
       left: 0;
       right: 0;
-      height: 50px;
+      height: 35px;
       background-color: #fff;
       font-size: small;
+    }
+
+    .form-control:focus {
+      box-shadow: none;
     }
 
     .content {
@@ -106,7 +110,7 @@
 </head>
 
 <body>
-  <div class="content container-fluid text-center" style="margin-left: 25px;">
+  <div class="content container-fluid text-center">
 
     <div id="page-loader" class="center"></div>
 
@@ -152,7 +156,7 @@
       <option>#7f8c8d</option>
     </datalist>
 
-    <select id="label-option" class="right form-control form-control-sm" style="width: 100px;">
+    <select id="label-option" class="right form-select form-select-sm" style="width: 100px;">
       <option>Add</option>
       <option>Remove</option>
     </select>
@@ -162,18 +166,10 @@
     <div id="container"></div>
 
     <script src="app.js" type="module"></script>
+
     <footer class="footer">
       Max Roser (2018) – "The map we need if we want to think about how global living conditions are changing".
       Published online at OurWorldInData.org. Retrieved from: https://ourworldindata.org/world-population-cartogram
-      [Online Resource]; Fork me on <a target="_blank"
-        href="https://github.com/addu390/population-cartogram">Github</a>; Download:
-      <a target="_blank"
-        href="https://github.com/addu390/population-cartogram/blob/master/data/world-population-unpd-3.csv">Population
-        Dataset</a>,
-      <a target="_blank"
-        href="https://github.com/addu390/population-cartogram/blob/master/data/test2/topo.json">Topojson</a>,
-      <a target="_blank"
-        href="https://github.com/addu390/population-cartogram/blob/master/data/test2/geo.json">Geojson</a>
     </footer>
   </div>
   <script>
