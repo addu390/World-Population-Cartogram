@@ -2,7 +2,7 @@
 
 A cartogram is a map in which the geometry of regions is distorted in order to convey the information of an alternate variable such as population. The region area will be inflated or deflated according to its numeric value
 
-<img src="https://github.com/addu390/population-cartogram/blob/master/images/cartogram.gif" width="128"/>
+<img src="https://github.com/addu390/population-cartogram/blob/master/images/cartogram.gif"/>
 
 ## Project set-up
 
