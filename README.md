@@ -1,5 +1,7 @@
 # 🗺️ World Population Cartogram
 
+Demo: [https://www.pyblog.xyz/population-cartogram/](https://www.pyblog.xyz/population-cartogram/)
+
 A cartogram is a map in which the geometry of regions is distorted in order to convey the information of an alternate variable such as population. The region area will be inflated or deflated according to its numeric value
 
 <img src="https://github.com/addu390/population-cartogram/blob/master/images/cartogram.gif"/>
@@ -13,7 +15,7 @@ A cartogram is a map in which the geometry of regions is distorted in order to c
 ## Dataset
 
 - [Raster Grid](https://sedac.ciesin.columbia.edu/data/set/gpw-v4-national-identifier-grid-rev11)
-- [Topojson](https://raw.githubusercontent.com/addu390/population-cartogram/master/data/test2/topo.json) - Max Roser's 2018 world population carogram by [@mattdzugan](https://github.com/mattdzugan/World-Population-Cartogram): 
+- [Topojson](https://raw.githubusercontent.com/addu390/population-cartogram/master/data/test2/topo.json) - Max Roser's 2018 world population carogram by [@mattdzugan](https://github.com/mattdzugan/World-Population-Cartogram)
 
 ## 📒 Citations
 
