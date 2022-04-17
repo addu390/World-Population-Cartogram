@@ -1,6 +1,9 @@
 import os
 import csv
 import numpy as np
+from matplotlib.collections import PatchCollection
+import matplotlib
+import matplotlib.pyplot as plt
 from shapely.geometry import Polygon as shpPolygon
 from shapely.geometry.polygon import orient
 from shapely.ops import unary_union
@@ -8,7 +11,7 @@ import pandas as pd
 from geojson import Feature, Polygon, MultiPolygon, FeatureCollection, dump
 
 
-def generate_pop():
+def generate_population():
     df_1 = pd.DataFrame(pd.read_csv("data/country-code.csv"))
     df_2 = pd.DataFrame(pd.read_csv("data/world-population-unpd.csv"))
 
@@ -22,10 +25,7 @@ def generate_pop():
     df_2["population"] = df_2["population"].astype('int')
 
     df_2 = df_2.set_index(['name', 'code', 'year'])['population'].unstack()
-    df_2 = df_2.filter(["name", "code", 1950, 2018, 2019, 2020, 2030])
-
     df_3 = pd.merge(df_2, df_1, on=['name', 'name'])
-    df_3 = df_3.filter(["name", "code", 1950, 2018, 2019, 2020, 2030])
 
     df_3.to_csv('temp.csv')
 
@@ -169,11 +169,26 @@ def create_polygon(row):
                        (row['X'], row['Y'] + 1)])
 
 
+def generate_plot(cell_filename, border_filename):
+    borders = pd.read_csv(border_filename)
+    cells = pd.read_csv(cell_filename)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, aspect='equal')
+    plt.xlim([0, max(cells["X"] + 1)])
+    plt.ylim([0, max(cells["Y"] + 1)])
+    n = cells.shape[0]
+    patches = []
+
+    for i in range(0, n):
+        patches.append(matplotlib.patches.Rectangle((cells.loc[i, "X"] + .5, cells.loc[i, "Y"] + .5), 0.2, 0.2, color="#111111"))
+    ax.add_collection(PatchCollection(patches, alpha=0.1))
+
+    for p in np.unique(borders["PolygonID"]):
+        ax.plot(borders.loc[borders["PolygonID"] == p, "X"], borders.loc[borders["PolygonID"] == p, "Y"])
+    plt.show()
+
+
 def df_to_tuple(border_df):
     border = tuple((zip(border_df.X / 1000, border_df.Y / 1000)))
     return border
-
-
-if __name__ == "__main__":
-    generate_pop()
-    print("Our World in Data - Generator")

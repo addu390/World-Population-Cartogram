@@ -10,7 +10,7 @@ World Population Cartogram from 1960 to 2060:
 
 ## Project set-up
 
-- Install dependencies: `npm install`
+- Install dependencies: `npm install` and `pip install -r requirements.txt`
 - Start server: `npx parcel index.html`
 - Deploy (gh-pages): `npm run deploy`
 
