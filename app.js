@@ -1,6 +1,8 @@
 import { hexbin } from 'd3-hexbin'
 import * as topogram from "topogram";
 
+var exportJson
+
 document.querySelector('#loader').classList.add("hide");
 let colors = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50',
   '#f1c40f', '#e67e22', '#e74c3c', '#ecf0f1', '#95a5a6', '#f39c12', '#d35400', '#c0392b', '#bdc3c7', '#7f8c8d']
@@ -25,12 +27,18 @@ yearButton.addEventListener('click', () => {
   start()
 });
 
-downloadButton.addEventListener('mouseover', () => {
-  d3.select("#download").on("click", function () {
-    d3.select(this)
-      .attr("href", 'data:application/octet-stream;base64,' + btoa(d3.select("#container").html()))
-      .attr("download", "cartogram.svg")
-  })
+downloadButton.addEventListener('click', () => {
+  let fileType = document.querySelector('#download-option').value;
+  var filename = "cartogram" + yearInput.value;
+  if (fileType == "Geojson") {
+    downloadObjectAsJson(exportJson, filename)
+  } else if (fileType == "SVG") {
+    d3.select("#download").each(function () {
+      d3.select(this)
+        .attr("href", 'data:application/octet-stream;base64,' + btoa(d3.select("#container").html()))
+        .attr("download", filename + ".svg")
+    })
+  }
 });
 
 const margin = { top: 15, right: 10, bottom: 15, left: 10 };
@@ -82,6 +90,21 @@ function plot_map(topo, pop, hexRadius, isProjected) {
   });
 
   var topoFeatures = cartogram(topo, topo.objects.tiles.geometries).features
+
+  exportJson = {
+    "type": "FeatureCollection",
+    "features": []
+  }
+
+  for (let i = 0; i < topoFeatures.length; i++) {
+    if (topoFeatures[i].geometry.type == "MultiPolygon") {
+      exportJson.features[i] = topoFeatures[i]
+      exportJson.features[i].geometry.type = "MultiPolygon"
+    } else {
+      exportJson.features[i] = topoFeatures[i]
+      exportJson.features[i].geometry.type = "Polygon"
+    }
+  }
 
   let features = []
   for (let i = 0; i < topoFeatures.length; i++) {
@@ -169,7 +192,7 @@ function mover(d) {
 }
 
 function mclickBase(d) {
-  let selectElement = document.querySelector('#label-option');
+  let selectElement = document.querySelector('#cell-option');
   if (selectElement.value == "Remove") {
     d3.select(this)
       .style('fill', '#fff')
@@ -193,7 +216,7 @@ function mclickBase(d) {
 }
 
 function mclick(d) {
-  let selectElement = document.querySelector('#label-option');
+  let selectElement = document.querySelector('#cell-option');
   if (selectElement.value == "Remove") {
     d3.select(this)
       .remove()
@@ -268,6 +291,16 @@ function getData(data) {
     obj[data[x].code] = data[x]
   }
   return obj
+}
+
+function downloadObjectAsJson(exportObj, exportName) {
+  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+  var downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute("href", dataStr);
+  downloadAnchorNode.setAttribute("download", exportName + ".json");
+  document.body.appendChild(downloadAnchorNode);
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
 }
 
 start()

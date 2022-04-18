@@ -131,8 +131,11 @@
       max="2100" value="2022" />
     <input type="button" value="Select Year" class="left btn btn-sm btn-success" id="select-year"></input>
 
-    <button class="btn btn-sm btn-secondary left" style="margin-left: 10px;"><a id="download" href="#">Download
-        SVG</button>
+    <select id="download-option" class="left form-select form-select-sm" style="width: 100px; margin-left: 10px;">
+      <option>Geojson</option>
+      <option>SVG</option>
+    </select>
+    <button class="btn btn-sm btn-secondary left"><a id="download" href="#">Download</button>
 
     <input type="color" list="presetColors" id="color-option" value="#8e44ad" class="right form-control form-control-sm"
       style="width: 100px; height: 2.2em; margin-right: 35px;">
@@ -159,7 +162,7 @@
       <option>#7f8c8d</option>
     </datalist>
 
-    <select id="label-option" class="right form-select form-select-sm" style="width: 100px;">
+    <select id="cell-option" class="right form-select form-select-sm" style="width: 100px;">
       <option>Add</option>
       <option>Remove</option>
     </select>
