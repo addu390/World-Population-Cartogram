@@ -20,6 +20,10 @@ World Population Cartogram from 1960 to 2060:
 - [Topojson](https://raw.githubusercontent.com/addu390/population-cartogram/master/data/test2/topo.json) - Max Roser's 2018 world population carogram by [@mattdzugan](https://github.com/mattdzugan/World-Population-Cartogram)
 - [Population Dataset](https://github.com/addu390/population-cartogram/blob/master/data/world-population-unpd-3.csv) from OWID (Our World in Data)
 
+## Download
+
+- Supported types: SVG and Geojson; recommended free tools to modify: [mapshaper](https://mapshaper.org/) for geojson and [rapidtables](https://www.rapidtables.com/web/tools/svg-viewer-editor.html) for SVG
+
 ## Citations
 
 ```
