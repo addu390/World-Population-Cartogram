@@ -117,10 +117,100 @@
     .height-30 {
       height: 30px
     }
+
+    .sidenav {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      background-color: #fdfdfd;
+      border-right: 1px solid #d0d2d3;
+      overflow-x: hidden;
+      transition: 0s;
+      padding-top: 25px;
+    }
+
+    .sidenav span {
+      font-size: 15px;
+    }
+
+    .sidenav .closebtn {
+      color: #000;
+      text-decoration: none;
+      position: absolute;
+      top: 0;
+      right: 25px;
+      font-size: 36px;
+      margin-left: 50px;
+    }
+
+    .closebtn:hover {
+      color: gray;
+    }
+
+    @media screen and (max-height: 450px) {
+      .sidenav {
+        padding-top: 15px;
+      }
+
+      .sidenav a {
+        font-size: 15px;
+      }
+    }
+
+    .padding-10 {
+      padding-top: 10px;
+    }
   </style>
 </head>
 
 <body>
+  <div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <div class="container-fluid">
+      <h5>Making a World Cartogram</h5>
+      <hr>
+      <span>A cartogram is a map in which the geometry of regions is distorted in order to convey the information of an
+        alternate variable such as population. The region area will be inflated or deflated according to its numeric
+        value</span>
+
+      <h5 class="padding-10"></h5>
+      <ul>
+        <li><span><b>Radius:</b> Reduce the hexagonal radius for higher resolution and increase it for faster load
+            time.</span></li>
+        <li><span><b>Year:</b> Choose a year between 1950 and 2100; the population cartogram is scaled from the year
+            2018. </span></li>
+        <li><span><b>Download:</b> Supported file types are SVG and GeoJSON; the geojson may not follow the right-hand
+            rule. </span></li>
+        <li><span><b>Add/Remove cells:</b> Double-click to add, remove or replace hexagonal cells and use the color
+            palette to change colors. </span></li>
+        <li><span><b>Drag and Drop:</b> Move cells across the point-top hex-grid </span></li>
+      </ul>
+
+      Looking to contribute? <span><a href="https://github.com/addu390/population-cartogram">Fork me on Github</a> <br>
+        Resources to get you started: <a
+          href="https://github.com/addu390/population-cartogram/blob/master/data/world-population-unpd-flat.csv">Population
+          Dataset</a>,
+        <a
+          href="https://github.com/addu390/population-cartogram/blob/master/data/population/2018/v2/topo.json">Topojson</a>
+        and
+        <a
+          href="https://github.com/addu390/population-cartogram/blob/master/data/population/2018/v2/geo.json">Geojson</a></span>
+
+      <h5 class="padding-10"></h5>
+      <span><b>License:</b> Our World In Data <a
+          href="https://ourworldindata.org/faqs#how-is-our-work-copyrighted">copyrights their work</a> under a <a
+          href="https://creativecommons.org/licenses/by/4.0/legalcode">CC-BY license</a>, so be sure to provide
+        attribution when using this Cartogram. Any code ('.py', '.js', '.html') found in this repository, is available
+        for use without restriction (<a
+          href="https://github.com/addu390/population-cartogram/blob/master/LICENSE">MIT</a>)</span>
+    </div>
+
+
+  </div>
+
   <div class="content container-fluid text-center">
 
     <div id="page-loader" class="center"></div>
@@ -129,7 +219,10 @@
       <div class="loader"></div>
     </div>
 
-    <input class="left form-control form-control-sm round-right" style="width: 50px; margin-left: 35px;" type="number"
+    <button type="button" class="btn btn-sm left btn-outline-dark" style="margin-left: 35px;"
+      onclick="openNav()">Info</button>
+
+    <input class="left form-control form-control-sm round-right" style="width: 50px; margin-left: 10px;" type="number"
       id="radius" name="radius" min="1" max="12" value="5" />
     <input type="button" value="Select Radius" class="left btn btn-sm btn-success round-left"
       id="select-radius"></input>
@@ -190,6 +283,14 @@
     </footer>
   </div>
   <script>
+    function openNav() {
+      document.getElementById("mySidenav").style.width = "450px";
+    }
+
+    function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+    }
+
     document.onreadystatechange = function () {
       if (document.readyState !== "complete") {
         document.querySelector("body").style.visibility = "hidden";
