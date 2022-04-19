@@ -9,6 +9,14 @@
     integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
   <script src="https://unpkg.com/d3"></script>
   <style>
+    .round-right {
+      border-radius: 5px 0 0 5px;
+    }
+
+    .round-left {
+      border-radius: 0 5px 5px 0;
+    }
+
     .footer {
       position: fixed;
       bottom: 0;
@@ -121,24 +129,26 @@
       <div class="loader"></div>
     </div>
 
-    <input class="left form-control form-control-sm" style="width: 50px; margin-left: 35px;" type="number" id="radius"
-      name="radius" min="1" max="12" value="5" />
-    <input type="button" value="Select Radius" class="left btn btn-sm btn-success" id="select-radius"></input>
+    <input class="left form-control form-control-sm round-right" style="width: 50px; margin-left: 35px;" type="number"
+      id="radius" name="radius" min="1" max="12" value="5" />
+    <input type="button" value="Select Radius" class="left btn btn-sm btn-success round-left"
+      id="select-radius"></input>
 
     <span class="left">&nbsp;&nbsp; </span>
 
-    <input class="left form-control form-control-sm" style="width: 80px;" type="number" id="year" name="year" min="1950"
-      max="2100" value="2022" />
-    <input type="button" value="Select Year" class="left btn btn-sm btn-success" id="select-year"></input>
+    <input class="left form-control form-control-sm round-right" style="width: 80px;" type="number" id="year"
+      name="year" min="1950" max="2100" value="2022" />
+    <input type="button" value="Select Year" class="left btn btn-sm btn-success round-left" id="select-year"></input>
 
-    <select id="download-option" class="left form-select form-select-sm" style="width: 100px; margin-left: 10px;">
+    <select id="download-option" class="left form-select form-select-sm round-right"
+      style="width: 100px; margin-left: 10px;">
       <option>Geojson</option>
       <option>SVG</option>
     </select>
-    <button class="btn btn-sm btn-secondary left"><a id="download" href="#">Download</button>
+    <button class="btn btn-sm btn-secondary left round-left"><a id="download" href="#">Download</button>
 
-    <input type="color" list="presetColors" id="color-option" value="#8e44ad" class="right form-control form-control-sm"
-      style="width: 100px; height: 2.2em; margin-right: 35px;">
+    <input type="color" list="presetColors" id="color-option" value="#8e44ad"
+      class="right form-control form-control-sm round-left" style="width: 100px; height: 2.2em; margin-right: 35px;">
     <datalist id="presetColors">
       <option>#1abc9c</option>
       <option>#2ecc71</option>
@@ -162,7 +172,7 @@
       <option>#7f8c8d</option>
     </datalist>
 
-    <select id="cell-option" class="right form-select form-select-sm" style="width: 100px;">
+    <select id="cell-option" class="right form-select form-select-sm round-right" style="width: 100px;">
       <option>Add</option>
       <option>Remove</option>
     </select>

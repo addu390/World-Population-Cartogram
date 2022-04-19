@@ -53,12 +53,12 @@ function start() {
   Promise.all([topoData, popData]).then(res => {
     let [topoData, popData] = res;
 
-    plot_map(topoData, popData, hexRadius, true);
+    plot_map(topoData, popData, hexRadius);
     document.querySelector('#loader').classList.add("hide");
   });
 }
 
-function plot_map(topo, pop, hexRadius, isProjected) {
+function plot_map(topo, pop, hexRadius) {
   let hexDistance = hexRadius * 1.5
   let cols = width / hexDistance
   let rows = Math.ceil(height / hexDistance);
