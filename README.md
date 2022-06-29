@@ -1,6 +1,8 @@
-# World Population Cartogram 🗺
+# ⚠️ No longer maintained
 
-Demo: [https://www.pyblog.xyz/population-cartogram](https://www.pyblog.xyz/population-cartogram/)
+In active development here: [https://github.com/owid/cartograms](https://github.com/owid/cartograms)
+
+Demo: [https://owid.github.io/cartograms](https://owid.github.io/cartograms)
 
 Wiki: A cartogram is a map in which the geometry of regions is distorted in order to convey the information of an alternate variable such as population. The region area will be inflated or deflated according to its numeric value
 
@@ -13,16 +15,6 @@ World Population Cartogram from 1960 to 2060:
 - Install dependencies: `npm install` and `pip install -r requirements.txt`
 - Start server: `npx parcel index.html`
 - Deploy (gh-pages): `npm run deploy`
-
-## Dataset
-
-- [Raster grid](https://sedac.ciesin.columbia.edu/data/set/gpw-v4-national-identifier-grid-rev11) from SEDAC 
-- [Topojson](https://raw.githubusercontent.com/addu390/population-cartogram/master/data/test2/topo.json) - Max Roser's 2018 world population carogram by [@mattdzugan](https://github.com/mattdzugan/World-Population-Cartogram)
-- [Population Dataset](https://github.com/addu390/population-cartogram/blob/master/data/world-population-unpd-3.csv) from OWID (Our World in Data)
-
-## Download
-
-- Supported types: SVG and Geojson; recommended free tools to modify: [mapshaper](https://mapshaper.org/) for geojson and [rapidtables](https://www.rapidtables.com/web/tools/svg-viewer-editor.html) for SVG
 
 ## Citations
 
